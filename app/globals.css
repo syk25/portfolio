@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #080e1a;
+  color: #e8eef8;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #080e1a; }
+::-webkit-scrollbar-thumb { background: #2a4a6a; border-radius: 3px; }
+
+/* Star twinkle animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+@keyframes twinkle-gold {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 0.9; }
+}
+
+/* Prose styles for blog/project markdown content */
+.prose {
+  color: #8aaac8;
+  line-height: 1.8;
+  font-size: 15px;
+}
+.prose h1, .prose h2, .prose h3 {
+  color: #e8eef8;
+  font-weight: 500;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+.prose h2 { font-size: 20px; }
+.prose h3 { font-size: 17px; }
+.prose p  { margin-bottom: 1.25rem; }
+.prose a  { color: #f0c060; text-decoration: underline; text-underline-offset: 3px; }
+.prose a:hover { color: #f8e4a0; }
+.prose code {
+  background: rgba(100,160,220,0.12);
+  border: 0.5px solid rgba(100,160,220,0.2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #c8ddf0;
+}
+.prose pre {
+  background: #0a1428;
+  border: 0.5px solid rgba(100,160,220,0.15);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+}
+.prose ul, .prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.prose li { margin-bottom: 0.4rem; }
+.prose blockquote {
+  border-left: 2px solid #f0c060;
+  padding-left: 1rem;
+  color: #6aaac8;
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+.prose hr {
+  border: none;
+  border-top: 0.5px solid rgba(100,160,220,0.12);
+  margin: 2rem 0;
+}
+.prose strong { color: #c8ddf0; font-weight: 500; }

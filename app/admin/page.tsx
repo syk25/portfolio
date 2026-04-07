@@ -78,7 +78,7 @@ export default function AdminPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <p className="text-star-gold text-xs tracking-widest uppercase mb-1">✦ Admin</p>
+          <p className="text-star-gold text-xs tracking-widest uppercase mb-1">◆ Admin</p>
           <h1 className="text-2xl font-medium text-ink-primary">Content Manager</h1>
         </div>
         <button onClick={signOut} className="text-xs text-ink-faint hover:text-ink-secondary transition-colors">

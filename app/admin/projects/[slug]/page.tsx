@@ -88,7 +88,7 @@ export default function ProjectEditPage({ params }: { params: Promise<{ slug: st
         <button onClick={() => router.push('/admin')} className="text-xs text-ink-faint hover:text-ink-secondary transition-colors mb-4 block">
           ← Back to list
         </button>
-        <p className="text-star-gold text-xs tracking-widest uppercase mb-1">✦ Admin · Projects</p>
+        <p className="text-star-gold text-xs tracking-widest uppercase mb-1">◆ Admin · Projects</p>
         <h1 className="text-2xl font-medium text-ink-primary">
           {isNew ? 'New project' : `Editing — ${slug}`}
         </h1>

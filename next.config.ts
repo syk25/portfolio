@@ -1,7 +1,5 @@
-import type { NextConfig } from 'next'
+import createNextIntlPlugin from 'next-intl/plugin'
 
-const config: NextConfig = {
-  // Vercel handles Next.js natively — no extra config needed
-}
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
 
-export default config
+export default withNextIntl({})

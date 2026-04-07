@@ -29,7 +29,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <form onSubmit={login} className="bg-space-card border border-ocean-light/15 rounded-2xl p-8 w-full max-w-sm">
-        <p className="text-star-gold text-xs tracking-widest uppercase mb-6">✦ Admin</p>
+        <p className="text-star-gold text-xs tracking-widest uppercase mb-6">◆ Admin</p>
         <h1 className="text-xl font-medium text-ink-primary mb-6">Sign in</h1>
         <input
           type="password"

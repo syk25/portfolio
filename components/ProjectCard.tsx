@@ -31,7 +31,7 @@ export function ProjectCard({ project }: { project: Project }) {
         <p className="text-[13px] text-ink-faint leading-relaxed mb-3">
           {project.description}
         </p>
-        <p className="text-xs text-star-gold">✦ {project.date}</p>
+        <p className="text-xs text-star-gold">◆ {project.date}</p>
       </div>
     </Link>
   )
@@ -48,7 +48,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
         className="absolute left-0 top-3 bottom-3 w-[2px] rounded-full bg-star-gold origin-center scale-y-0 group-hover:scale-y-100 transition-transform duration-300 ease-out"
         aria-hidden="true"
       />
-      <p className="text-xs text-star-gold mb-1.5">✦ {post.date}</p>
+      <p className="text-xs text-star-gold mb-1.5">◆ {post.date}</p>
       <h3 className="text-sm font-medium text-ink-secondary group-hover:text-ink-primary transition-colors duration-200 mb-1.5">
         {post.title}
       </h3>

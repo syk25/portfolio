@@ -1,0 +1,67 @@
+{
+  "nav": {
+    "about": "about",
+    "projects": "projects",
+    "blog": "blog"
+  },
+  "home": {
+    "hero": {
+      "greeting": "Hi, I'm",
+      "cta": "View Projects"
+    },
+    "story": {
+      "label": "My story",
+      "items": [
+        { "title": "University",      "body": "Where I learned to think in systems and ask why before how." },
+        { "title": "Kenya",           "body": "Where I learned that technology only matters if it reaches real people." },
+        { "title": "What I believe",  "body": "Warmth and rigor aren't opposites. The best solutions have both." },
+        { "title": "Building toward", "body": "A world where good engineering quietly makes life better." }
+      ]
+    },
+    "projects": {
+      "label": "Projects",
+      "viewAll": "view all →"
+    },
+    "social": {
+      "label": "Find me",
+      "yt": "My channel — thoughts on tech and life",
+      "in": "Professional background and experience",
+      "gh": "Open source and personal experiments"
+    },
+    "blog": {
+      "label": "Latest thoughts",
+      "viewAll": "view all →"
+    }
+  },
+  "blog": {
+    "label": "Writing",
+    "title": "Blog",
+    "description": "Thoughts on technology, people, and building with purpose.",
+    "back": "← back to blog"
+  },
+  "projects": {
+    "label": "Work",
+    "title": "Projects",
+    "description": "Things I've built — real problems, real people.",
+    "back": "← back to projects",
+    "liveDemo": "Live Demo →",
+    "github": "GitHub →"
+  },
+  "notFound": {
+    "label": "404",
+    "title": "Lost in space.",
+    "description": "This page drifted off into the void. Let's get you back.",
+    "back": "← Back to home"
+  },
+  "chatbot": {
+    "title": "Ask me anything",
+    "subtitle": "About this portfolio",
+    "suggestions": [
+      "What projects have you built?",
+      "What do you believe in?",
+      "What's your background?"
+    ],
+    "placeholder": "Ask something…",
+    "error": "Something went wrong. Please try again."
+  }
+}

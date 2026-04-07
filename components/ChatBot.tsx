@@ -1,11 +1,15 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
 
 type Message = { role: 'user' | 'assistant'; content: string }
 
+const SUGGESTIONS = [
+  'What projects have you built?',
+  'What do you believe in?',
+  "What's your background?",
+]
+
 export default function ChatBot() {
-  const t = useTranslations('chatbot')
   const [open, setOpen]         = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput]       = useState('')
@@ -57,7 +61,7 @@ export default function ChatBot() {
         })
       }
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: t('error') }])
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
     } finally {
       setLoading(false)
     }
@@ -69,7 +73,6 @@ export default function ChatBot() {
   }
 
   return (
-    // Sits in the right gutter, beside the content column
     <div
       className="fixed bottom-6 z-50"
       style={{ right: 'max(calc((100vw - 800px) / 2 - 56px), 8px)' }}
@@ -84,8 +87,8 @@ export default function ChatBot() {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-ocean-light/10">
             <div>
-              <p className="text-sm font-medium text-ink-primary">{t('title')}</p>
-              <p className="text-[11px] text-ink-faint">{t('subtitle')}</p>
+              <p className="text-sm font-medium text-ink-primary">Ask me anything</p>
+              <p className="text-[11px] text-ink-faint">About this portfolio</p>
             </div>
             <button onClick={() => setOpen(false)}
               className="text-ink-faint hover:text-ink-secondary transition-colors text-lg leading-none">
@@ -98,7 +101,7 @@ export default function ChatBot() {
             {messages.length === 0 && (
               <div className="flex flex-col gap-2 mt-2">
                 <p className="text-xs text-ink-faint mb-1">Try asking:</p>
-                {(t.raw('suggestions') as string[]).map(s => (
+                {SUGGESTIONS.map(s => (
                   <button key={s} onClick={() => send(s)}
                     className="text-left text-xs px-3 py-2 rounded-lg border border-ocean-light/15 text-ink-muted hover:border-ocean-light/35 hover:text-ink-secondary transition-colors">
                     {s}
@@ -131,7 +134,7 @@ export default function ChatBot() {
               ref={inputRef}
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder={t('placeholder')}
+              placeholder="Ask something…"
               disabled={loading}
               className="flex-1 bg-space-surface border border-ocean-light/15 rounded-lg px-3 py-2 text-sm text-ink-primary placeholder:text-ink-faint focus:outline-none focus:border-ocean-light/40 disabled:opacity-50"
             />

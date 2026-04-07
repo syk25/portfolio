@@ -1,7 +1,6 @@
-import { getTranslations } from 'next-intl/server'
 import { getProject } from '@/lib/content'
 import { notFound } from 'next/navigation'
-import { Link } from '@/i18n/routing'
+import Link from 'next/link'
 
 export default async function ProjectPage({
   params,
@@ -9,7 +8,6 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug }  = await params
-  const t         = await getTranslations('projects')
   const project   = await getProject(slug)
   if (!project) notFound()
 
@@ -19,7 +17,7 @@ export default async function ProjectPage({
         href="/projects"
         className="text-[11px] text-ocean-muted hover:text-ink-secondary transition-colors mb-8 inline-block"
       >
-        {t('back')}
+        ← back to projects
       </Link>
 
       <p className="text-[10px] text-star-gold mb-3">◆ {project.date}</p>
@@ -41,13 +39,13 @@ export default async function ProjectPage({
           {project.demo && (
             <a href={project.demo} target="_blank" rel="noopener noreferrer"
               className="text-[12px] px-4 py-2 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors">
-              {t('liveDemo')}
+              Live Demo →
             </a>
           )}
           {project.github && (
             <a href={project.github} target="_blank" rel="noopener noreferrer"
               className="text-[12px] px-4 py-2 rounded-lg border border-ocean-light/30 text-ocean-light hover:border-ocean-light/60 transition-colors">
-              {t('github')}
+              GitHub →
             </a>
           )}
         </div>

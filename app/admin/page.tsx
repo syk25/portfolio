@@ -52,6 +52,8 @@ export default function AdminPage() {
   const [chatSuggestions,     setChatSuggestions]     = useState<string[]>(['What projects have you built?', "What do you believe in?", "What's your background?"])
   const [saving,              setSaving]              = useState(false)
   const [saved,               setSaved]               = useState(false)
+  const [settingsLoaded,      setSettingsLoaded]      = useState(false)
+  const [chatbotLoaded,       setChatbotLoaded]       = useState(false)
 
   const fetchContent = useCallback(async () => {
     const [blogRes, projRes] = await Promise.all([
@@ -75,6 +77,7 @@ export default function AdminPage() {
       setSocialLinks(data.socialLinks ?? DEFAULT_SOCIAL_LINKS)
       setStoryItems(data.storyItems ?? DEFAULT_STORY_ITEMS)
       setChipLinks(data.chipLinks ?? [])
+      setSettingsLoaded(true)
     }
   }, [])
 
@@ -84,6 +87,7 @@ export default function AdminPage() {
       const data = await res.json()
       setCustomInstructions(data.customInstructions ?? '')
       if (data.suggestions?.length) setChatSuggestions(data.suggestions)
+      setChatbotLoaded(true)
     }
   }, [])
 
@@ -323,10 +327,10 @@ export default function AdminPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={saveLanding}
-              disabled={saving}
+              disabled={saving || !settingsLoaded}
               className="text-xs px-4 py-1.5 bg-star-gold text-[#100c00] font-medium rounded-lg hover:bg-star-pale transition-colors disabled:opacity-50"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving…' : !settingsLoaded ? 'Loading…' : 'Save'}
             </button>
             {saved && <p className="text-xs text-star-gold">Saved</p>}
           </div>
@@ -391,10 +395,10 @@ export default function AdminPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={saveChatbot}
-              disabled={saving}
+              disabled={saving || !chatbotLoaded}
               className="text-xs px-4 py-1.5 bg-star-gold text-[#100c00] font-medium rounded-lg hover:bg-star-pale transition-colors disabled:opacity-50"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving…' : !chatbotLoaded ? 'Loading…' : 'Save'}
             </button>
             {saved && <p className="text-xs text-star-gold">Saved</p>}
           </div>

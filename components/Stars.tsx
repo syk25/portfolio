@@ -11,12 +11,17 @@ interface Star {
   peakOp: number
   phase: 'idle' | 'brightening' | 'dimming'
   rotation: number
+  vx: number
+  vy: number
 }
+
+// Drift angle: ~12° from horizontal — gentle diagonal pan through space
+const DRIFT_ANGLE = Math.PI * 0.067
 
 export default function Stars() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const starsRef = useRef<Star[]>([])
-  const rafRef   = useRef<number>(0)
+  const starsRef  = useRef<Star[]>([])
+  const rafRef    = useRef<number>(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -25,23 +30,27 @@ export default function Stars() {
     if (!ctx) return
 
     const makeStars = () => {
-      starsRef.current = Array.from({ length: 160 }, () => {
-        const baseOp = 0.12 + Math.random() * 0.28
+      starsRef.current = Array.from({ length: 180 }, () => {
+        const r      = Math.random() * 1.6 + 0.7
+        const baseOp = 0.10 + Math.random() * 0.25
+        // Parallax: larger (closer) stars drift faster
+        const speed  = 0.018 + (r - 0.7) / 1.6 * 0.032
         return {
           x:        Math.random() * canvas.width,
           y:        Math.random() * canvas.height,
-          r:        Math.random() * 1.6 + 0.7,
-          gold:     Math.random() < 0.08,
+          r,
+          gold:     Math.random() < 0.07,
           baseOp,
           op:       baseOp,
-          peakOp:   Math.min(0.72, baseOp * 2.8),
+          peakOp:   Math.min(0.68, baseOp * 2.6),
           phase:    'idle' as const,
           rotation: Math.random() * (Math.PI / 4),
+          vx:       Math.cos(DRIFT_ANGLE) * speed,
+          vy:       Math.sin(DRIFT_ANGLE) * speed,
         }
       })
     }
 
-    // Draw a 4-pointed sparkle (✦ shape)
     const drawSparkle = (x: number, y: number, r: number, rotation: number) => {
       const inner = r * 0.08
       ctx.beginPath()
@@ -58,22 +67,29 @@ export default function Stars() {
       ctx.closePath()
     }
 
+    const W = () => canvas.width
+    const H = () => canvas.height
+
     const render = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.clearRect(0, 0, W(), H())
 
       starsRef.current.forEach(s => {
+        // Drift
+        s.x += s.vx
+        s.y += s.vy
+        // Wrap edges
+        if (s.x >  W() + 2) s.x = -2
+        if (s.x < -2)       s.x =  W() + 2
+        if (s.y >  H() + 2) s.y = -2
+        if (s.y < -2)       s.y =  H() + 2
+
+        // Twinkle
         if (s.phase === 'brightening') {
-          s.op += (s.peakOp - s.op) * 0.1
-          if (Math.abs(s.op - s.peakOp) < 0.008) {
-            s.op    = s.peakOp
-            s.phase = 'dimming'
-          }
+          s.op += (s.peakOp - s.op) * 0.10
+          if (Math.abs(s.op - s.peakOp) < 0.008) { s.op = s.peakOp; s.phase = 'dimming' }
         } else if (s.phase === 'dimming') {
           s.op += (s.baseOp - s.op) * 0.025
-          if (Math.abs(s.op - s.baseOp) < 0.004) {
-            s.op    = s.baseOp
-            s.phase = 'idle'
-          }
+          if (Math.abs(s.op - s.baseOp) < 0.004) { s.op = s.baseOp; s.phase = 'idle' }
         }
 
         ctx.fillStyle = s.gold
@@ -89,9 +105,7 @@ export default function Stars() {
 
     const triggerTwinkle = () => {
       starsRef.current.forEach(s => {
-        if (s.phase === 'idle' && Math.random() < 0.25) {
-          s.phase = 'brightening'
-        }
+        if (s.phase === 'idle' && Math.random() < 0.25) s.phase = 'brightening'
       })
     }
 
@@ -118,7 +132,7 @@ export default function Stars() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.9 }}
+      style={{ opacity: 0.85 }}
     />
   )
 }

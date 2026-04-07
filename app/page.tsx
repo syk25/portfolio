@@ -26,34 +26,27 @@ export default async function Home() {
     <div className="max-w-content mx-auto px-6">
 
       {/* Hero */}
-      <section className="relative pt-16 pb-12 overflow-hidden">
-        {/* Nebula + aurora background */}
-        <div className="hero-nebula" aria-hidden="true">
-          <div className="nebula-orb nebula-orb-1" />
-          <div className="nebula-orb nebula-orb-2" />
-          <div className="nebula-orb nebula-orb-3" />
-          <div className="nebula-aurora" />
-        </div>
-
-        <div className="relative z-10">
-          <p className="text-xs tracking-widest text-star-gold uppercase mb-4">
-            ✦ Backend · AI · Solutions · Sales
-          </p>
-          <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
-            Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
-            <br />Let&apos;s build a better world.
-          </h1>
-          <p className="text-base text-ocean-muted leading-relaxed mb-7 max-w-[480px]">
-            I build tools that solve real problems — starting in my community,
-            one small improvement at a time. These things compound.
-          </p>
-          <Link
-            href="/projects"
-            className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"
-          >
-            View Projects
-          </Link>
-        </div>
+      <section className="pt-16 pb-12">
+        <p className="text-xs tracking-widest text-star-gold uppercase mb-4">
+          ✦ Backend · AI · Solutions · Sales
+        </p>
+        <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
+          Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
+          <br />Let&apos;s build a better world.
+        </h1>
+        <p className="text-base text-ocean-muted leading-relaxed mb-7 max-w-[520px]">
+          I want to make the world a little better, starting with what&apos;s
+          around me. I build tools to improve educational experiences and solve
+          real problems in my community. Recently, that meant building something
+          for my local fitness center after they asked for help. It&apos;s a
+          small step — but I believe these improvements compound.
+        </p>
+        <Link
+          href="/projects"
+          className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"
+        >
+          View Projects
+        </Link>
       </section>
 
       <hr className="border-ocean-dim/20" />

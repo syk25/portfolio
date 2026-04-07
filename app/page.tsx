@@ -37,9 +37,10 @@ export default async function Home() {
           <br />Let&apos;s build a better world.
         </h1>
         <p className="text-base text-ocean-muted leading-relaxed mb-6 max-w-[520px]">
-          I write code, ask hard questions, and care about who it&apos;s for.
-          Technology is only as good as the lives it improves — so I build
-          with that in mind, every time.
+          The world gets better one solved problem at a time — cleaner streets,
+          better schools, communities that feel less alone. I build software
+          because I believe every small improvement compounds. This work is
+          how I show up for that.
         </p>
         <div className="flex flex-wrap gap-2 mb-7">
           {roles.map(r => (

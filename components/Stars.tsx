@@ -55,7 +55,7 @@ export default function Stars() {
     // Soft glowing circle — bright core fading to transparent halo.
     // This is how stars actually look: diffraction + atmosphere bloom.
     const drawStar = (s: Star) => {
-      const glowR = s.r * 4.5   // halo extends ~4.5× the core
+      const glowR = s.r * 2.25  // halo extends ~2.25× the core (50% of original)
       const grad  = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR)
 
       const color = s.gold ? '240,200,90' : '215,232,255'

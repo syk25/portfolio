@@ -3,14 +3,10 @@ import { getProjects, getBlogPosts, getLandingSettings } from '@/lib/content'
 import type { SectionKey } from '@/lib/content'
 import { ProjectCard } from '@/components/ProjectCard'
 import { BlogCard } from '@/components/ProjectCard'
-import { LinkCard } from '@/components/ProjectCard'
-
 export default async function Home() {
   const projects                                                             = (await getProjects()).slice(0, 2)
   const posts                                                               = (await getBlogPosts()).slice(0, 3)
-  const { subheader, heroSubtitle, description, sectionOrder, socialLinks, storyItems, chipLinks } = await getLandingSettings()
-
-  const visibleLinks = socialLinks.filter(l => !l.hidden)
+  const { subheader, heroSubtitle, description, sectionOrder, storyItems, chipLinks } = await getLandingSettings()
 
   const sections: Record<SectionKey, React.ReactNode> = {
     projects: (
@@ -45,14 +41,7 @@ export default async function Home() {
         </div>
       </section>
     ),
-    social: (
-      <section className="py-10">
-        <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">Find me</p>
-        <div className="flex flex-col gap-2">
-          {visibleLinks.map(l => <LinkCard key={l.label} {...l} />)}
-        </div>
-      </section>
-    ),
+    social: null,
     blog: posts.length > 0 ? (
       <section className="py-10">
         <div className="flex justify-between items-center mb-5">
@@ -83,25 +72,27 @@ export default async function Home() {
         <p className="text-base text-ocean-muted leading-relaxed mb-7 max-w-lg">
           {description}
         </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href="/projects"
-            className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"
-          >
-            View Projects
-          </Link>
-          {chipLinks.map((chip, i) => (
-            <a
-              key={i}
-              href={chip.href}
-              target={chip.href.startsWith('http') ? '_blank' : undefined}
-              rel={chip.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-              className="text-sm px-4 py-2 rounded-lg border border-ocean-light/20 text-ink-muted hover:border-star-gold/50 hover:text-star-gold transition-colors"
-            >
-              {chip.label}
-            </a>
-          ))}
-        </div>
+        <Link
+          href="/projects"
+          className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors inline-block"
+        >
+          View Projects
+        </Link>
+        {chipLinks.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {chipLinks.map((chip, i) => (
+              <a
+                key={i}
+                href={chip.href}
+                target={chip.href.startsWith('http') ? '_blank' : undefined}
+                rel={chip.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                className="text-[11px] px-3 py-1 rounded-full border border-ocean-light/20 text-ink-faint hover:border-star-gold/50 hover:text-star-gold transition-colors"
+              >
+                {chip.label}
+              </a>
+            ))}
+          </div>
+        )}
       </section>
 
       {sectionOrder.map((key) => {

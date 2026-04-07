@@ -49,15 +49,21 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
   const { slug } = await params
   if (!/^[a-z0-9-]+$/.test(slug)) return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
 
-  const raw = await blobGet(`projects/${slug}.md`)
-  if (!raw) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  try {
+    const raw = await blobGet(`projects/${slug}.md`)
+    if (!raw) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  const { data, content } = matter(raw)
-  const hidden = !(data.hidden ?? false)
-  await blobPut(`projects/${slug}.md`, matter.stringify(content, { ...data, hidden }))
-  revalidatePath('/projects')
-  revalidatePath(`/projects/${slug}`)
-  return NextResponse.json({ slug, hidden })
+    const { data, content } = matter(raw)
+    const hidden = !(data.hidden ?? false)
+    const { title, description, date, tags, demo, github } = data
+    await blobPut(`projects/${slug}.md`, matter.stringify(content, { title, description, date, tags, demo, github, hidden }))
+    revalidatePath('/projects')
+    revalidatePath(`/projects/${slug}`)
+    return NextResponse.json({ slug, hidden })
+  } catch (err) {
+    console.error('[PATCH /api/content/projects/[slug]]', err)
+    return NextResponse.json({ error: String(err) }, { status: 500 })
+  }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {

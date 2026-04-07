@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import matter from 'gray-matter'
+import { revalidatePath } from 'next/cache'
 import { verifyCookie, COOKIE_NAME } from '@/lib/session'
 import { blobGet, blobPut, blobDel } from '@/lib/blob'
 
@@ -26,6 +27,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
 
   const { title, date, excerpt, content } = await req.json()
   await blobPut(`blog/${slug}.md`, matter.stringify(content ?? '', { title, date, excerpt }))
+  revalidatePath('/blog')
+  revalidatePath(`/blog/${slug}`)
   return NextResponse.json({ slug })
 }
 
@@ -36,5 +39,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ s
   if (!/^[a-z0-9-]+$/.test(slug)) return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
 
   await blobDel(`blog/${slug}.md`)
+  revalidatePath('/blog')
+  revalidatePath(`/blog/${slug}`)
   return NextResponse.json({ slug })
 }

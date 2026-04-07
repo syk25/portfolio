@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import matter from 'gray-matter'
+import { revalidatePath } from 'next/cache'
 import { verifyCookie, COOKIE_NAME } from '@/lib/session'
 import { blobList, blobGet, blobPut, blobFetch } from '@/lib/blob'
 
@@ -29,5 +30,6 @@ export async function POST(req: NextRequest) {
   if (existing) return NextResponse.json({ error: 'Slug already exists' }, { status: 409 })
 
   await blobPut(`blog/${slug}.md`, matter.stringify(content ?? '', { title, date, excerpt }))
+  revalidatePath('/blog')
   return NextResponse.json({ slug }, { status: 201 })
 }

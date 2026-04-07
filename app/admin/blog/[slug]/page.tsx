@@ -1,8 +1,6 @@
 'use client'
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { getStoredPassword } from '@/lib/auth'
-
 type Form = { slug: string; title: string; date: string; excerpt: string; content: string }
 const empty = (): Form => ({ slug: '', title: '', date: '', excerpt: '', content: '' })
 
@@ -15,10 +13,10 @@ export default function BlogEditPage({ params }: { params: Promise<{ slug: strin
   const [saving, setSaving] = useState(false)
   const [error, setError]   = useState('')
   const [loaded, setLoaded] = useState(isNew)
+
   useEffect(() => {
     if (isNew) return
-    const pw = getStoredPassword()
-    fetch(`/api/content/blog/${slug}`, { headers: { 'x-admin-password': pw } })
+    fetch(`/api/content/blog/${slug}`)
       .then(r => r.json())
       .then(data => {
         setForm({
@@ -32,17 +30,15 @@ export default function BlogEditPage({ params }: { params: Promise<{ slug: strin
       })
   }, [slug, isNew])
 
-
   async function save(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
     setError('')
-    const pw     = getStoredPassword()
     const url    = isNew ? '/api/content/blog' : `/api/content/blog/${slug}`
     const method = isNew ? 'POST' : 'PUT'
     const res    = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': pw },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     })
     if (res.ok) {

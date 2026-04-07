@@ -1,8 +1,6 @@
 'use client'
 import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
-import { getStoredPassword } from '@/lib/auth'
-
 type Form = {
   slug: string; title: string; description: string; date: string
   tags: string; demo: string; github: string; content: string
@@ -23,8 +21,7 @@ export default function ProjectEditPage({ params }: { params: Promise<{ slug: st
 
   useEffect(() => {
     if (isNew) return
-    const pw = getStoredPassword()
-    fetch(`/api/content/projects/${slug}`, { headers: { 'x-admin-password': pw } })
+    fetch(`/api/content/projects/${slug}`)
       .then(r => r.json())
       .then(data => {
         setForm({
@@ -41,12 +38,10 @@ export default function ProjectEditPage({ params }: { params: Promise<{ slug: st
       })
   }, [slug, isNew])
 
-
   async function save(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
     setError('')
-    const pw     = getStoredPassword()
     const url    = isNew ? '/api/content/projects' : `/api/content/projects/${slug}`
     const method = isNew ? 'POST' : 'PUT'
     const body   = {
@@ -61,7 +56,7 @@ export default function ProjectEditPage({ params }: { params: Promise<{ slug: st
     }
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': pw },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
     if (res.ok) {

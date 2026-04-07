@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { getStoredPassword, storePassword, clearPassword } from '@/lib/auth'
 
 type BlogPost = { slug: string; title: string; date: string; excerpt: string }
 type Project  = { slug: string; title: string; date: string; description: string; tags: string[] }
@@ -9,87 +8,31 @@ type Tab = 'blog' | 'projects'
 
 export default function AdminPage() {
   const router = useRouter()
-  const [password, setPassword]   = useState('')
-  const [authed, setAuthed]       = useState(false)
-  const [authError, setAuthError] = useState(false)
-  const [tab, setTab]             = useState<Tab>('blog')
-  const [posts, setPosts]         = useState<BlogPost[]>([])
-  const [projects, setProjects]   = useState<Project[]>([])
+  const [tab, setTab]         = useState<Tab>('blog')
+  const [posts, setPosts]     = useState<BlogPost[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
 
-  const fetchContent = useCallback(async (pw: string) => {
+  const fetchContent = useCallback(async () => {
     const [blogRes, projRes] = await Promise.all([
-      fetch('/api/content/blog',     { headers: { 'x-admin-password': pw } }),
-      fetch('/api/content/projects', { headers: { 'x-admin-password': pw } }),
+      fetch('/api/content/blog'),
+      fetch('/api/content/projects'),
     ])
     if (blogRes.ok) setPosts(await blogRes.json())
     if (projRes.ok) setProjects(await projRes.json())
   }, [])
 
-  // Auto-login if password is in sessionStorage
-  useEffect(() => {
-    const stored = getStoredPassword()
-    if (!stored) return
-    fetch('/api/content/blog', { headers: { 'x-admin-password': stored } })
-      .then(res => {
-        if (res.ok) {
-          setAuthed(true)
-          fetchContent(stored)
-        } else {
-          clearPassword()
-        }
-      })
-  }, [fetchContent])
+  useEffect(() => { fetchContent() }, [fetchContent])
 
-  async function login(e: React.FormEvent) {
-    e.preventDefault()
-    const res = await fetch('/api/content/blog', { headers: { 'x-admin-password': password } })
-    if (res.ok) {
-      storePassword(password)
-      setAuthed(true)
-      setAuthError(false)
-      await fetchContent(password)
-    } else {
-      setAuthError(true)
-    }
-  }
-
-  function signOut() {
-    clearPassword()
-    setAuthed(false)
-    setPassword('')
+  async function signOut() {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/admin/login')
   }
 
   async function remove(type: Tab, slug: string, title: string) {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return
-    const pw  = getStoredPassword()
     const url = type === 'blog' ? `/api/content/blog/${slug}` : `/api/content/projects/${slug}`
-    const res = await fetch(url, { method: 'DELETE', headers: { 'x-admin-password': pw } })
-    if (res.ok) await fetchContent(pw)
-  }
-
-  if (!authed) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <form onSubmit={login} className="bg-space-card border border-ocean-light/15 rounded-2xl p-8 w-full max-w-sm">
-          <p className="text-star-gold text-xs tracking-widest uppercase mb-6">✦ Admin</p>
-          <h1 className="text-xl font-medium text-ink-primary mb-6">Sign in</h1>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full bg-space-surface border border-ocean-light/20 rounded-lg px-4 py-2.5 text-sm text-ink-primary placeholder:text-ink-faint focus:outline-none focus:border-ocean-light/50 mb-3"
-          />
-          {authError && <p className="text-red-400 text-xs mb-3">Incorrect password.</p>}
-          <button
-            type="submit"
-            className="w-full bg-star-gold text-[#100c00] text-sm font-medium py-2.5 rounded-lg hover:bg-star-pale transition-colors"
-          >
-            Enter
-          </button>
-        </form>
-      </div>
-    )
+    const res = await fetch(url, { method: 'DELETE' })
+    if (res.ok) await fetchContent()
   }
 
   const items = tab === 'blog' ? posts : projects

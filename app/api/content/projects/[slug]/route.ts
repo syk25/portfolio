@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { verifyCookie, COOKIE_NAME } from '@/lib/session'
 
 const projectsDir = path.join(process.cwd(), 'content/projects')
 
 function checkAuth(req: NextRequest) {
-  return req.headers.get('x-admin-password') === process.env.ADMIN_PASSWORD
+  return verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
 }
 
 function safePath(slug: string) {

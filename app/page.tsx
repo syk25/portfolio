@@ -4,6 +4,7 @@ import { getBlogPosts } from '@/lib/content'
 import { ProjectCard } from '@/components/ProjectCard'
 import { BlogCard } from '@/components/ProjectCard'
 import { LinkCard } from '@/components/ProjectCard'
+import Earth from '@/components/Earth'
 
 const socialLinks = [
   { icon: 'yt', label: 'YouTube',  sub: 'My channel — thoughts on tech and life', href: 'https://youtube.com' },
@@ -30,17 +31,23 @@ export default async function Home() {
         <p className="text-xs tracking-widest text-star-gold uppercase mb-4">
           ✦ Backend · AI · Solutions · Sales
         </p>
-        <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
-          Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
-          <br />Let&apos;s build a better world.
-        </h1>
-        <p className="text-base text-ocean-muted leading-relaxed mb-7 max-w-[520px]">
-          I want to make the world a little better, starting with what&apos;s
-          around me. I build tools to improve educational experiences and solve
-          real problems in my community. Recently, that meant building something
-          for my local fitness center after they asked for help. It&apos;s a
-          small step — but I believe these improvements compound.
-        </p>
+        {/* Flex row: text left, Earth right — Earth shrinks with viewport */}
+        <div className="flex items-start gap-5 mb-7">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
+              Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
+              <br />Let&apos;s build a better world.
+            </h1>
+            <p className="text-base text-ocean-muted leading-relaxed">
+              I want to make the world a little better, starting with what&apos;s
+              around me. I build tools to improve educational experiences and solve
+              real problems in my community. Recently, that meant building something
+              for my local fitness center after they asked for help. It&apos;s a
+              small step — but I believe these improvements compound.
+            </p>
+          </div>
+          <Earth />
+        </div>
         <Link
           href="/projects"
           className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"

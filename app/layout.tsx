@@ -3,7 +3,6 @@ import './globals.css'
 import Nav from '@/components/Nav'
 import Stars from '@/components/Stars'
 import Planet from '@/components/Planet'
-import Earth from '@/components/Earth'
 import ChatBot from '@/components/ChatBot'
 
 export const metadata: Metadata = {
@@ -20,7 +19,6 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-space-deep min-h-screen text-ink-primary relative">
         <Stars />
-        <Earth />
         <Planet />
         <div className="relative z-10">
           <Nav />

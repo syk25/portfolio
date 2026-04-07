@@ -103,12 +103,24 @@ export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
   }
 }
 
+export type SectionKey = 'projects' | 'story' | 'social' | 'blog'
+
+export type SocialLink = {
+  icon:   string
+  label:  string
+  sub:    string
+  href:   string
+  hidden: boolean
+}
+
 export type LandingSettings = {
   gnb:          string
   footer:       string
   subheader:    string
   heroSubtitle: string
   description:  string
+  sectionOrder: SectionKey[]
+  socialLinks:  SocialLink[]
 }
 
 const DEFAULTS: LandingSettings = {
@@ -117,6 +129,12 @@ const DEFAULTS: LandingSettings = {
   subheader:    '◆ Backend · AI · Solutions · Sales',
   heroSubtitle: "Let's build a better world.",
   description:  "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound.",
+  sectionOrder: ['projects', 'story', 'social', 'blog'],
+  socialLinks: [
+    { icon: 'yt', label: 'YouTube',  sub: 'My channel — thoughts on tech and life', href: 'https://youtube.com',  hidden: false },
+    { icon: 'in', label: 'LinkedIn', sub: 'Professional background and experience',  href: 'https://linkedin.com', hidden: false },
+    { icon: 'gh', label: 'GitHub',   sub: 'Open source and personal experiments',    href: 'https://github.com',   hidden: false },
+  ],
 }
 
 export async function getLandingSettings(): Promise<LandingSettings> {

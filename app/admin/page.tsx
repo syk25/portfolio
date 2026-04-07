@@ -2,9 +2,26 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
-type BlogPost = { slug: string; title: string; date: string; excerpt: string; hidden: boolean }
-type Project  = { slug: string; title: string; date: string; description: string; tags: string[]; hidden: boolean }
-type Tab = 'blog' | 'projects' | 'landing'
+type BlogPost    = { slug: string; title: string; date: string; excerpt: string; hidden: boolean }
+type Project     = { slug: string; title: string; date: string; description: string; tags: string[]; hidden: boolean }
+type Tab         = 'blog' | 'projects' | 'landing'
+type SectionKey  = 'projects' | 'story' | 'social' | 'blog'
+type SocialLink  = { icon: string; label: string; sub: string; href: string; hidden: boolean }
+
+const SECTION_LABELS: Record<SectionKey, string> = {
+  projects: 'Projects',
+  story:    'My Story',
+  social:   'Find Me',
+  blog:     'Latest Thoughts',
+}
+
+const DEFAULT_SECTION_ORDER: SectionKey[] = ['projects', 'story', 'social', 'blog']
+
+const DEFAULT_SOCIAL_LINKS: SocialLink[] = [
+  { icon: 'yt', label: 'YouTube',  sub: 'My channel — thoughts on tech and life', href: 'https://youtube.com',  hidden: false },
+  { icon: 'in', label: 'LinkedIn', sub: 'Professional background and experience',  href: 'https://linkedin.com', hidden: false },
+  { icon: 'gh', label: 'GitHub',   sub: 'Open source and personal experiments',    href: 'https://github.com',   hidden: false },
+]
 
 export default function AdminPage() {
   const router = useRouter()
@@ -18,6 +35,8 @@ export default function AdminPage() {
   const [subheader,    setSubheader]    = useState('')
   const [heroSubtitle, setHeroSubtitle] = useState('')
   const [description,  setDescription]  = useState('')
+  const [sectionOrder, setSectionOrder] = useState<SectionKey[]>(DEFAULT_SECTION_ORDER)
+  const [socialLinks,  setSocialLinks]  = useState<SocialLink[]>(DEFAULT_SOCIAL_LINKS)
   const [saving,       setSaving]       = useState(false)
   const [saved,        setSaved]        = useState(false)
 
@@ -39,6 +58,8 @@ export default function AdminPage() {
       setSubheader(data.subheader ?? '')
       setHeroSubtitle(data.heroSubtitle ?? '')
       setDescription(data.description ?? '')
+      setSectionOrder(data.sectionOrder ?? DEFAULT_SECTION_ORDER)
+      setSocialLinks(data.socialLinks ?? DEFAULT_SOCIAL_LINKS)
     }
   }, [])
 
@@ -63,12 +84,24 @@ export default function AdminPage() {
     if (res.ok) await fetchContent()
   }
 
+  function moveSection(index: number, dir: -1 | 1) {
+    const next = [...sectionOrder]
+    const swap = index + dir
+    if (swap < 0 || swap >= next.length) return
+    ;[next[index], next[swap]] = [next[swap], next[index]]
+    setSectionOrder(next)
+  }
+
+  function updateSocialLink(index: number, field: keyof SocialLink, value: string | boolean) {
+    setSocialLinks(prev => prev.map((l, i) => i === index ? { ...l, [field]: value } : l))
+  }
+
   async function saveLanding() {
     setSaving(true)
     const res = await fetch('/api/content/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gnb, footer, subheader, heroSubtitle, description }),
+      body: JSON.stringify({ gnb, footer, subheader, heroSubtitle, description, sectionOrder, socialLinks }),
     })
     setSaving(false)
     if (res.ok) {
@@ -109,24 +142,106 @@ export default function AdminPage() {
 
       {/* Landing page tab */}
       {tab === 'landing' && (
-        <div className="flex flex-col gap-5">
-          {[
-            { label: 'GNB',           value: gnb,          set: setGnb,          rows: 1 },
-            { label: 'Footer',        value: footer,       set: setFooter,       rows: 1 },
-            { label: 'Subheader',     value: subheader,    set: setSubheader,    rows: 1 },
-            { label: 'Hero Subtitle', value: heroSubtitle, set: setHeroSubtitle, rows: 1 },
-            { label: 'Description',   value: description,  set: setDescription,  rows: 4 },
-          ].map(({ label, value, set, rows }) => (
-            <div key={label}>
-              <p className="text-xs text-ink-faint uppercase tracking-widest mb-2">{label}</p>
-              <textarea
-                value={value}
-                onChange={e => set(e.target.value)}
-                rows={rows}
-                className="w-full bg-space-card border border-ocean-light/10 rounded-xl px-4 py-3 text-sm text-ink-secondary leading-relaxed resize-y focus:outline-none focus:border-star-gold/40"
-              />
+        <div className="flex flex-col gap-8">
+
+          {/* Text fields */}
+          <div className="flex flex-col gap-5">
+            <p className="text-xs text-ink-faint uppercase tracking-widest">Text Content</p>
+            {[
+              { label: 'GNB',           value: gnb,          set: setGnb,          rows: 1 },
+              { label: 'Footer',        value: footer,       set: setFooter,       rows: 1 },
+              { label: 'Subheader',     value: subheader,    set: setSubheader,    rows: 1 },
+              { label: 'Hero Subtitle', value: heroSubtitle, set: setHeroSubtitle, rows: 1 },
+              { label: 'Description',   value: description,  set: setDescription,  rows: 4 },
+            ].map(({ label, value, set, rows }) => (
+              <div key={label}>
+                <p className="text-xs text-ink-faint mb-2">{label}</p>
+                <textarea
+                  value={value}
+                  onChange={e => set(e.target.value)}
+                  rows={rows}
+                  className="w-full bg-space-card border border-ocean-light/10 rounded-xl px-4 py-3 text-sm text-ink-secondary leading-relaxed resize-y focus:outline-none focus:border-star-gold/40"
+                />
+              </div>
+            ))}
+          </div>
+
+          <hr className="border-ocean-dim/20" />
+
+          {/* Section order */}
+          <div className="flex flex-col gap-3">
+            <p className="text-xs text-ink-faint uppercase tracking-widest">Section Order</p>
+            <div className="flex flex-col gap-2">
+              {sectionOrder.map((key, i) => (
+                <div key={key} className="flex items-center justify-between px-4 py-3 bg-space-card border border-ocean-light/10 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-ink-faint w-4">{i + 1}</span>
+                    <p className="text-sm text-ink-secondary">{SECTION_LABELS[key]}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => moveSection(i, -1)}
+                      disabled={i === 0}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg border border-ocean-light/20 text-ink-muted hover:border-ocean-light/40 hover:text-ink-secondary transition-colors disabled:opacity-25 disabled:cursor-not-allowed text-xs"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => moveSection(i, 1)}
+                      disabled={i === sectionOrder.length - 1}
+                      className="w-7 h-7 flex items-center justify-center rounded-lg border border-ocean-light/20 text-ink-muted hover:border-ocean-light/40 hover:text-ink-secondary transition-colors disabled:opacity-25 disabled:cursor-not-allowed text-xs"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <hr className="border-ocean-dim/20" />
+
+          {/* Find Me links */}
+          <div className="flex flex-col gap-3">
+            <p className="text-xs text-ink-faint uppercase tracking-widest">Find Me Links</p>
+            <div className="flex flex-col gap-3">
+              {socialLinks.map((link, i) => (
+                <div
+                  key={link.icon}
+                  className={`px-4 py-4 bg-space-card border border-ocean-light/10 rounded-xl flex flex-col gap-3 transition-opacity ${link.hidden ? 'opacity-50' : ''}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-ocean-light/10 text-ink-faint">{link.icon}</span>
+                      {link.hidden && <span className="text-[10px] px-1.5 py-0.5 rounded bg-ocean-light/10 text-ink-faint">hidden</span>}
+                    </div>
+                    <button
+                      onClick={() => updateSocialLink(i, 'hidden', !link.hidden)}
+                      className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors"
+                    >
+                      {link.hidden ? 'Show' : 'Hide'}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {[
+                      { field: 'label', placeholder: 'Label' },
+                      { field: 'sub',   placeholder: 'Subtitle' },
+                      { field: 'href',  placeholder: 'URL' },
+                    ].map(({ field, placeholder }) => (
+                      <input
+                        key={field}
+                        value={link[field as keyof SocialLink] as string}
+                        onChange={e => updateSocialLink(i, field as keyof SocialLink, e.target.value)}
+                        placeholder={placeholder}
+                        className="bg-space-surface border border-ocean-light/15 rounded-lg px-3 py-2 text-sm text-ink-secondary placeholder:text-ink-faint focus:outline-none focus:border-star-gold/40"
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="flex items-center gap-3">
             <button
               onClick={saveLanding}
@@ -143,7 +258,6 @@ export default function AdminPage() {
       {/* Content tabs (blog / projects) */}
       {tab !== 'landing' && (
         <>
-          {/* List header */}
           <div className="flex justify-between items-center mb-3">
             <p className="text-xs text-ink-faint">{items.length} {tab === 'blog' ? 'posts' : 'projects'}</p>
             <button
@@ -154,15 +268,12 @@ export default function AdminPage() {
             </button>
           </div>
 
-          {/* List */}
           <div className="flex flex-col gap-2">
             {items.map(item => (
               <div
                 key={item.slug}
                 className={`flex items-center justify-between px-4 py-3 bg-space-card border rounded-xl transition-opacity ${
-                  item.hidden
-                    ? 'border-ocean-light/5 opacity-50'
-                    : 'border-ocean-light/10'
+                  item.hidden ? 'border-ocean-light/5 opacity-50' : 'border-ocean-light/10'
                 }`}
               >
                 <div>

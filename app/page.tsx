@@ -1,26 +1,79 @@
 import Link from 'next/link'
 import { getProjects, getBlogPosts, getLandingSettings } from '@/lib/content'
+import type { SectionKey } from '@/lib/content'
 import { ProjectCard } from '@/components/ProjectCard'
 import { BlogCard } from '@/components/ProjectCard'
 import { LinkCard } from '@/components/ProjectCard'
 
-const socialLinks = [
-  { icon: 'yt', label: 'YouTube',  sub: 'My channel — thoughts on tech and life', href: 'https://youtube.com' },
-  { icon: 'in', label: 'LinkedIn', sub: 'Professional background and experience',  href: 'https://linkedin.com' },
-  { icon: 'gh', label: 'GitHub',   sub: 'Open source and personal experiments',    href: 'https://github.com'  },
-]
-
 const story = [
   { title: 'University',        body: 'Where I learned to think in systems and ask why before how.' },
   { title: 'Kenya',             body: 'Where I learned that technology only matters if it reaches real people.' },
-  { title: 'What I believe',    body: 'Warmth and rigor aren\'t opposites. The best solutions have both.' },
+  { title: 'What I believe',    body: "Warmth and rigor aren't opposites. The best solutions have both." },
   { title: 'Building toward',   body: 'A world where good engineering quietly makes life better.' },
 ]
 
 export default async function Home() {
-  const projects                           = (await getProjects()).slice(0, 2)
-  const posts                              = (await getBlogPosts()).slice(0, 3)
-  const { subheader, heroSubtitle, description } = await getLandingSettings()
+  const projects                                              = (await getProjects()).slice(0, 2)
+  const posts                                                 = (await getBlogPosts()).slice(0, 3)
+  const { subheader, heroSubtitle, description, sectionOrder, socialLinks } = await getLandingSettings()
+
+  const visibleLinks = socialLinks.filter(l => !l.hidden)
+
+  const sections: Record<SectionKey, React.ReactNode> = {
+    projects: (
+      <section className="py-10">
+        <div className="flex justify-between items-center mb-5">
+          <p className="text-xs tracking-widest text-ocean-faint uppercase">Projects</p>
+          <Link href="/projects" className="text-xs text-star-gold hover:text-star-pale transition-colors">
+            view all →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {projects.map(p => <ProjectCard key={p.slug} project={p} />)}
+        </div>
+      </section>
+    ),
+    story: (
+      <section className="py-10">
+        <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">My story</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {story.map(s => (
+            <div
+              key={s.title}
+              className="bg-space-card rounded-xl p-4 transition-all duration-300 ease-out
+                shadow-[0_2px_8px_rgba(0,0,0,0.45),inset_0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.04)]
+                hover:shadow-[0_0_0_1px_rgba(240,192,96,0.20),0_8px_24px_rgba(240,192,96,0.07),inset_0_1px_0_rgba(240,192,96,0.05)]
+                hover:-translate-y-0.5 group"
+            >
+              <h3 className="text-sm font-medium text-ink-secondary mb-1.5 group-hover:text-ink-primary transition-colors duration-200">{s.title}</h3>
+              <p className="text-[13px] text-ink-faint leading-relaxed">{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    ),
+    social: (
+      <section className="py-10">
+        <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">Find me</p>
+        <div className="flex flex-col gap-2">
+          {visibleLinks.map(l => <LinkCard key={l.label} {...l} />)}
+        </div>
+      </section>
+    ),
+    blog: (
+      <section className="py-10">
+        <div className="flex justify-between items-center mb-5">
+          <p className="text-xs tracking-widest text-ocean-faint uppercase">Latest thoughts</p>
+          <Link href="/blog" className="text-xs text-star-gold hover:text-star-pale transition-colors">
+            view all →
+          </Link>
+        </div>
+        <div className="flex flex-col">
+          {posts.map(p => <BlogCard key={p.slug} post={p} />)}
+        </div>
+      </section>
+    ),
+  }
 
   return (
     <div className="max-w-content mx-auto px-6">
@@ -45,66 +98,12 @@ export default async function Home() {
         </Link>
       </section>
 
-      <hr className="border-ocean-dim/20" />
-
-      {/* Projects */}
-      <section className="py-10">
-        <div className="flex justify-between items-center mb-5">
-          <p className="text-xs tracking-widest text-ocean-faint uppercase">Projects</p>
-          <Link href="/projects" className="text-xs text-star-gold hover:text-star-pale transition-colors">
-            view all →
-          </Link>
+      {sectionOrder.map((key, i) => (
+        <div key={key}>
+          <hr className="border-ocean-dim/20" />
+          {sections[key]}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {projects.map(p => <ProjectCard key={p.slug} project={p} />)}
-        </div>
-      </section>
-
-      <hr className="border-ocean-dim/20" />
-
-      {/* Story */}
-      <section className="py-10">
-        <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">My story</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {story.map(s => (
-            <div
-              key={s.title}
-              className="bg-space-card rounded-xl p-4 transition-all duration-300 ease-out
-                shadow-[0_2px_8px_rgba(0,0,0,0.45),inset_0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.04)]
-                hover:shadow-[0_0_0_1px_rgba(240,192,96,0.20),0_8px_24px_rgba(240,192,96,0.07),inset_0_1px_0_rgba(240,192,96,0.05)]
-                hover:-translate-y-0.5 group"
-            >
-              <h3 className="text-sm font-medium text-ink-secondary mb-1.5 group-hover:text-ink-primary transition-colors duration-200">{s.title}</h3>
-              <p className="text-[13px] text-ink-faint leading-relaxed">{s.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <hr className="border-ocean-dim/20" />
-
-      {/* Social links */}
-      <section className="py-10">
-        <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">Find me</p>
-        <div className="flex flex-col gap-2">
-          {socialLinks.map(l => <LinkCard key={l.label} {...l} />)}
-        </div>
-      </section>
-
-      <hr className="border-ocean-dim/20" />
-
-      {/* Blog */}
-      <section className="py-10">
-        <div className="flex justify-between items-center mb-5">
-          <p className="text-xs tracking-widest text-ocean-faint uppercase">Latest thoughts</p>
-          <Link href="/blog" className="text-xs text-star-gold hover:text-star-pale transition-colors">
-            view all →
-          </Link>
-        </div>
-        <div className="flex flex-col">
-          {posts.map(p => <BlogCard key={p.slug} post={p} />)}
-        </div>
-      </section>
+      ))}
 
     </div>
   )

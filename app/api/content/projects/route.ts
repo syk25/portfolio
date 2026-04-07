@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import matter from 'gray-matter'
 import { verifyCookie, COOKIE_NAME } from '@/lib/session'
-import { blobList, blobGet, blobPut } from '@/lib/blob'
+import { blobList, blobGet, blobPut, blobFetch } from '@/lib/blob'
 
 async function checkAuth(req: NextRequest) {
   return await verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
@@ -10,8 +10,7 @@ async function checkAuth(req: NextRequest) {
 export async function GET() {
   const blobs = await blobList('projects/')
   const projects = await Promise.all(blobs.map(async ({ pathname, url }) => {
-    const res = await fetch(url, { cache: 'no-store' })
-    const raw = await res.text()
+    const raw = await blobFetch(url)
     const { data, content } = matter(raw)
     const slug = pathname.replace('projects/', '').replace('.md', '')
     return {

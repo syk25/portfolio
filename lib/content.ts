@@ -1,7 +1,7 @@
 import matter from 'gray-matter'
 import { remark } from 'remark'
 import remarkHtml from 'remark-html'
-import { blobList, blobGet } from './blob'
+import { blobList, blobGet, blobFetch } from './blob'
 
 export type Project = {
   slug:        string
@@ -30,8 +30,7 @@ async function toHtml(md: string): Promise<string> {
 export async function getProjects(): Promise<Project[]> {
   const blobs = await blobList('projects/')
   const projects = await Promise.all(blobs.map(async ({ pathname, url }) => {
-    const res = await fetch(url, { cache: 'no-store' })
-    const raw = await res.text()
+    const raw = await blobFetch(url)
     const { data, content } = matter(raw)
     const slug = pathname.replace('projects/', '').replace('.md', '')
     return {
@@ -67,8 +66,7 @@ export async function getProject(slug: string): Promise<Project | undefined> {
 export async function getBlogPosts(): Promise<BlogPost[]> {
   const blobs = await blobList('blog/')
   const posts = await Promise.all(blobs.map(async ({ pathname, url }) => {
-    const res = await fetch(url, { cache: 'no-store' })
-    const raw = await res.text()
+    const raw = await blobFetch(url)
     const { data, content } = matter(raw)
     const slug = pathname.replace('blog/', '').replace('.md', '')
     return {

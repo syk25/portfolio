@@ -30,7 +30,7 @@ async function uploadDir(dir, prefix) {
   for (const file of files) {
     const content = fs.readFileSync(path.join(fullDir, file), 'utf8')
     const blobPath = `${prefix}${file}`
-    await put(blobPath, content, { access: 'public', addRandomSuffix: false, token })
+      await put(blobPath, content, { access: 'private', addRandomSuffix: false, token })
     console.log(`  uploaded ${blobPath}`)
   }
 }
@@ -42,7 +42,7 @@ async function uploadFile(filePath, blobPath) {
     return
   }
   const content = fs.readFileSync(full, 'utf8')
-  await put(blobPath, content, { access: 'public', addRandomSuffix: false, token })
+  await put(blobPath, content, { access: 'private', addRandomSuffix: false, token })
   console.log(`  uploaded ${blobPath}`)
 }
 

@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import matter from 'gray-matter'
-import { blobGet, blobList } from '@/lib/blob'
+import { blobGet, blobList, blobFetch } from '@/lib/blob'
 
 const client = new Anthropic()
 
@@ -11,16 +11,14 @@ async function buildSystemPrompt(): Promise<string> {
 
   const projectBlobs = await blobList('projects/')
   const projects = (await Promise.all(projectBlobs.map(async ({ url }) => {
-    const res = await fetch(url, { cache: 'no-store' })
-    const raw = await res.text()
+    const raw = await blobFetch(url)
     const { data, content } = matter(raw)
     return `### ${data.title}\nDate: ${data.date}\nTags: ${(data.tags ?? []).join(', ')}\n${content}`
   }))).join('\n\n---\n\n')
 
   const blogBlobs = await blobList('blog/')
   const posts = (await Promise.all(blogBlobs.map(async ({ url }) => {
-    const res = await fetch(url, { cache: 'no-store' })
-    const raw = await res.text()
+    const raw = await blobFetch(url)
     const { data, content } = matter(raw)
     return `### ${data.title}\nDate: ${data.date}\n${content}`
   }))).join('\n\n---\n\n')

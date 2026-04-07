@@ -4,13 +4,21 @@ import { useRouter } from 'next/navigation'
 
 type BlogPost = { slug: string; title: string; date: string; excerpt: string }
 type Project  = { slug: string; title: string; date: string; description: string; tags: string[] }
-type Tab = 'blog' | 'projects'
+type Tab = 'blog' | 'projects' | 'settings'
+
+const DEFAULT_DESCRIPTION =
+  "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound."
 
 export default function AdminPage() {
   const router = useRouter()
   const [tab, setTab]         = useState<Tab>('blog')
   const [posts, setPosts]     = useState<BlogPost[]>([])
   const [projects, setProjects] = useState<Project[]>([])
+
+  // Settings state
+  const [description, setDescription]     = useState('')
+  const [descSaved, setDescSaved]         = useState(false)
+  const [descSaving, setDescSaving]       = useState(false)
 
   const fetchContent = useCallback(async () => {
     const [blogRes, projRes] = await Promise.all([
@@ -21,21 +29,44 @@ export default function AdminPage() {
     if (projRes.ok) setProjects(await projRes.json())
   }, [])
 
+  const fetchSettings = useCallback(async () => {
+    const res = await fetch('/api/content/settings')
+    if (res.ok) {
+      const data = await res.json()
+      setDescription(data.description ?? DEFAULT_DESCRIPTION)
+    }
+  }, [])
+
   useEffect(() => { fetchContent() }, [fetchContent])
+  useEffect(() => { fetchSettings() }, [fetchSettings])
 
   async function signOut() {
     await fetch('/api/auth/logout', { method: 'POST' })
     router.push('/admin/login')
   }
 
-  async function remove(type: Tab, slug: string, title: string) {
+  async function remove(type: 'blog' | 'projects', slug: string, title: string) {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return
     const url = type === 'blog' ? `/api/content/blog/${slug}` : `/api/content/projects/${slug}`
     const res = await fetch(url, { method: 'DELETE' })
     if (res.ok) await fetchContent()
   }
 
-  const items = tab === 'blog' ? posts : projects
+  async function saveDescription() {
+    setDescSaving(true)
+    const res = await fetch('/api/content/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ description }),
+    })
+    setDescSaving(false)
+    if (res.ok) {
+      setDescSaved(true)
+      setTimeout(() => setDescSaved(false), 2000)
+    }
+  }
+
+  const items = tab === 'blog' ? posts : tab === 'projects' ? projects : []
 
   return (
     <div className="max-w-content mx-auto px-6 py-10">
@@ -52,7 +83,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-space-surface border border-ocean-light/10 rounded-lg p-1 w-fit">
-        {(['blog', 'projects'] as Tab[]).map(t => (
+        {(['blog', 'projects', 'settings'] as Tab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -65,48 +96,78 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {/* List header */}
-      <div className="flex justify-between items-center mb-3">
-        <p className="text-xs text-ink-faint">{items.length} {tab === 'blog' ? 'posts' : 'projects'}</p>
-        <button
-          onClick={() => router.push(`/admin/${tab}/new`)}
-          className="text-xs px-4 py-1.5 bg-star-gold text-[#100c00] font-medium rounded-lg hover:bg-star-pale transition-colors"
-        >
-          + New
-        </button>
-      </div>
-
-      {/* List */}
-      <div className="flex flex-col gap-2">
-        {items.map(item => (
-          <div
-            key={item.slug}
-            className="flex items-center justify-between px-4 py-3 bg-space-card border border-ocean-light/10 rounded-xl"
-          >
-            <div>
-              <p className="text-sm font-medium text-ink-secondary">{item.title || item.slug}</p>
-              <p className="text-xs text-ink-faint mt-0.5">{item.slug} · {item.date}</p>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => router.push(`/admin/${tab}/${item.slug}`)}
-                className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => remove(tab, item.slug, item.title)}
-                className="text-xs px-3 py-1.5 border border-red-500/30 text-red-400/70 rounded-lg hover:border-red-500/50 hover:text-red-400 transition-colors"
-              >
-                Delete
-              </button>
-            </div>
+      {/* Settings tab */}
+      {tab === 'settings' && (
+        <div className="flex flex-col gap-4">
+          <div>
+            <p className="text-xs text-ink-faint uppercase tracking-widest mb-2">Hero description</p>
+            <textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              rows={5}
+              className="w-full bg-space-card border border-ocean-light/10 rounded-xl px-4 py-3 text-sm text-ink-secondary leading-relaxed resize-y focus:outline-none focus:border-star-gold/40"
+            />
           </div>
-        ))}
-        {items.length === 0 && (
-          <p className="text-sm text-ink-faint text-center py-10">No {tab === 'blog' ? 'posts' : 'projects'} yet.</p>
-        )}
-      </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={saveDescription}
+              disabled={descSaving}
+              className="text-xs px-4 py-1.5 bg-star-gold text-[#100c00] font-medium rounded-lg hover:bg-star-pale transition-colors disabled:opacity-50"
+            >
+              {descSaving ? 'Saving…' : 'Save'}
+            </button>
+            {descSaved && <p className="text-xs text-star-gold">Saved</p>}
+          </div>
+        </div>
+      )}
+
+      {/* Content tabs (blog / projects) */}
+      {tab !== 'settings' && (
+        <>
+          {/* List header */}
+          <div className="flex justify-between items-center mb-3">
+            <p className="text-xs text-ink-faint">{items.length} {tab === 'blog' ? 'posts' : 'projects'}</p>
+            <button
+              onClick={() => router.push(`/admin/${tab}/new`)}
+              className="text-xs px-4 py-1.5 bg-star-gold text-[#100c00] font-medium rounded-lg hover:bg-star-pale transition-colors"
+            >
+              + New
+            </button>
+          </div>
+
+          {/* List */}
+          <div className="flex flex-col gap-2">
+            {items.map(item => (
+              <div
+                key={item.slug}
+                className="flex items-center justify-between px-4 py-3 bg-space-card border border-ocean-light/10 rounded-xl"
+              >
+                <div>
+                  <p className="text-sm font-medium text-ink-secondary">{item.title || item.slug}</p>
+                  <p className="text-xs text-ink-faint mt-0.5">{item.slug} · {item.date}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => router.push(`/admin/${tab}/${item.slug}`)}
+                    className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => remove(tab as 'blog' | 'projects', item.slug, item.title)}
+                    className="text-xs px-3 py-1.5 border border-red-500/30 text-red-400/70 rounded-lg hover:border-red-500/50 hover:text-red-400 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+            {items.length === 0 && (
+              <p className="text-sm text-ink-faint text-center py-10">No {tab === 'blog' ? 'posts' : 'projects'} yet.</p>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

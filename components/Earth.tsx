@@ -7,7 +7,7 @@ export default function Earth() {
         borderRadius:'50%',
         overflow:    'hidden',
         // Seamlessly shrinks as viewport narrows; caps at 260px on wide screens
-        width:       'clamp(72px, 18vw, 260px)',
+        width:       'clamp(64px, 14vw, 260px)',
         aspectRatio: '1 / 1',
       }}
     >

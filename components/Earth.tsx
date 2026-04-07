@@ -38,17 +38,10 @@ export default function Earth() {
         ].join(', '),
       }}
     >
-      <video
-        src="/earth.webm"
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{
-          width:      '100%',
-          height:     '100%',
-          objectFit:  'cover',
-        }}
+      <img
+        src="/earth.jpg"
+        alt=""
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />
     </div>
   )

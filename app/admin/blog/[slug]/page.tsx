@@ -32,11 +32,19 @@ export default function BlogEditPage({ params }: { params: Promise<{ slug: strin
 
   async function save(e: React.FormEvent) {
     e.preventDefault()
-    setSaving(true)
     setError('')
     const url    = isNew ? '/api/content/blog' : `/api/content/blog/${slug}`
     const method = isNew ? 'POST' : 'PUT'
-    const res    = await fetch(url, {
+
+    if (!isNew) {
+      // Optimistic: navigate away immediately, save happens in background
+      router.push('/admin')
+      fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+      return
+    }
+
+    setSaving(true)
+    const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),

@@ -33,9 +33,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
   const { slug } = await params
   if (!/^[a-z0-9-]+$/.test(slug)) return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
 
-  const existing = await blobGet(`projects/${slug}.md`)
-  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-
   const { title, description, date, tags, demo, github, content } = await req.json()
   await blobPut(`projects/${slug}.md`, matter.stringify(content ?? '', { title, description, date, tags, demo, github }))
   return NextResponse.json({ slug })

@@ -40,7 +40,6 @@ export default function ProjectEditPage({ params }: { params: Promise<{ slug: st
 
   async function save(e: React.FormEvent) {
     e.preventDefault()
-    setSaving(true)
     setError('')
     const url    = isNew ? '/api/content/projects' : `/api/content/projects/${slug}`
     const method = isNew ? 'POST' : 'PUT'
@@ -54,6 +53,15 @@ export default function ProjectEditPage({ params }: { params: Promise<{ slug: st
       github:      form.github,
       content:     form.content,
     }
+
+    if (!isNew) {
+      // Optimistic: navigate away immediately, save happens in background
+      router.push('/admin')
+      fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      return
+    }
+
+    setSaving(true)
     const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },

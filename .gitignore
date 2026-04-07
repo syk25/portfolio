@@ -5,3 +5,9 @@ out/
 .env.local
 .DS_Store
 *.log
+
+# Content lives in Vercel Blob — local copies are for seeding only
+content/
+
+# TypeScript build cache
+tsconfig.tsbuildinfo

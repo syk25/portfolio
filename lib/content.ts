@@ -113,6 +113,16 @@ export type SocialLink = {
   hidden: boolean
 }
 
+export type StoryItem = {
+  title: string
+  body:  string
+}
+
+export type ChipLink = {
+  label: string
+  href:  string
+}
+
 export type LandingSettings = {
   gnb:          string
   footer:       string
@@ -121,6 +131,8 @@ export type LandingSettings = {
   description:  string
   sectionOrder: SectionKey[]
   socialLinks:  SocialLink[]
+  storyItems:   StoryItem[]
+  chipLinks:    ChipLink[]
 }
 
 const DEFAULTS: LandingSettings = {
@@ -129,12 +141,19 @@ const DEFAULTS: LandingSettings = {
   subheader:    '◆ Backend · AI · Solutions · Sales',
   heroSubtitle: "Let's build a better world.",
   description:  "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound.",
-  sectionOrder: ['projects', 'story', 'social', 'blog'],
+  sectionOrder: ['projects', 'story', 'blog'],
   socialLinks: [
     { icon: 'yt', label: 'YouTube',  sub: 'My channel — thoughts on tech and life', href: 'https://youtube.com',  hidden: false },
     { icon: 'in', label: 'LinkedIn', sub: 'Professional background and experience',  href: 'https://linkedin.com', hidden: false },
     { icon: 'gh', label: 'GitHub',   sub: 'Open source and personal experiments',    href: 'https://github.com',   hidden: false },
   ],
+  storyItems: [
+    { title: 'University',      body: 'Where I learned to think in systems and ask why before how.' },
+    { title: 'Kenya',           body: 'Where I learned that technology only matters if it reaches real people.' },
+    { title: 'What I believe',  body: "Warmth and rigor aren't opposites. The best solutions have both." },
+    { title: 'Building toward', body: 'A world where good engineering quietly makes life better.' },
+  ],
+  chipLinks: [],
 }
 
 export async function getLandingSettings(): Promise<LandingSettings> {

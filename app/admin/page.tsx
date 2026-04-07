@@ -7,6 +7,8 @@ type Project     = { slug: string; title: string; date: string; description: str
 type Tab         = 'blog' | 'projects' | 'landing'
 type SectionKey  = 'projects' | 'story' | 'social' | 'blog'
 type SocialLink  = { icon: string; label: string; sub: string; href: string; hidden: boolean }
+type StoryItem   = { title: string; body: string }
+type ChipLink    = { label: string; href: string }
 
 const SECTION_LABELS: Record<SectionKey, string> = {
   projects: 'Projects',
@@ -15,12 +17,19 @@ const SECTION_LABELS: Record<SectionKey, string> = {
   blog:     'Latest Thoughts',
 }
 
-const DEFAULT_SECTION_ORDER: SectionKey[] = ['projects', 'story', 'social', 'blog']
+const DEFAULT_SECTION_ORDER: SectionKey[] = ['projects', 'story', 'blog']
 
 const DEFAULT_SOCIAL_LINKS: SocialLink[] = [
   { icon: 'yt', label: 'YouTube',  sub: 'My channel — thoughts on tech and life', href: 'https://youtube.com',  hidden: false },
   { icon: 'in', label: 'LinkedIn', sub: 'Professional background and experience',  href: 'https://linkedin.com', hidden: false },
   { icon: 'gh', label: 'GitHub',   sub: 'Open source and personal experiments',    href: 'https://github.com',   hidden: false },
+]
+
+const DEFAULT_STORY_ITEMS: StoryItem[] = [
+  { title: 'University',      body: 'Where I learned to think in systems and ask why before how.' },
+  { title: 'Kenya',           body: 'Where I learned that technology only matters if it reaches real people.' },
+  { title: 'What I believe',  body: "Warmth and rigor aren't opposites. The best solutions have both." },
+  { title: 'Building toward', body: 'A world where good engineering quietly makes life better.' },
 ]
 
 export default function AdminPage() {
@@ -37,6 +46,8 @@ export default function AdminPage() {
   const [description,  setDescription]  = useState('')
   const [sectionOrder, setSectionOrder] = useState<SectionKey[]>(DEFAULT_SECTION_ORDER)
   const [socialLinks,  setSocialLinks]  = useState<SocialLink[]>(DEFAULT_SOCIAL_LINKS)
+  const [storyItems,   setStoryItems]   = useState<StoryItem[]>(DEFAULT_STORY_ITEMS)
+  const [chipLinks,    setChipLinks]    = useState<ChipLink[]>([])
   const [saving,       setSaving]       = useState(false)
   const [saved,        setSaved]        = useState(false)
 
@@ -60,6 +71,8 @@ export default function AdminPage() {
       setDescription(data.description ?? '')
       setSectionOrder(data.sectionOrder ?? DEFAULT_SECTION_ORDER)
       setSocialLinks(data.socialLinks ?? DEFAULT_SOCIAL_LINKS)
+      setStoryItems(data.storyItems ?? DEFAULT_STORY_ITEMS)
+      setChipLinks(data.chipLinks ?? [])
     }
   }, [])
 
@@ -92,16 +105,12 @@ export default function AdminPage() {
     setSectionOrder(next)
   }
 
-  function updateSocialLink(index: number, field: keyof SocialLink, value: string | boolean) {
-    setSocialLinks(prev => prev.map((l, i) => i === index ? { ...l, [field]: value } : l))
-  }
-
   async function saveLanding() {
     setSaving(true)
     const res = await fetch('/api/content/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gnb, footer, subheader, heroSubtitle, description, sectionOrder, socialLinks }),
+      body: JSON.stringify({ gnb, footer, subheader, heroSubtitle, description, sectionOrder, socialLinks, storyItems, chipLinks }),
     })
     setSaving(false)
     if (res.ok) {
@@ -201,42 +210,85 @@ export default function AdminPage() {
 
           <hr className="border-ocean-dim/20" />
 
-          {/* Find Me links */}
+          {/* Hero Chips */}
           <div className="flex flex-col gap-3">
-            <p className="text-xs text-ink-faint uppercase tracking-widest">Find Me Links</p>
-            <div className="flex flex-col gap-3">
-              {socialLinks.map((link, i) => (
-                <div
-                  key={link.icon}
-                  className={`px-4 py-4 bg-space-card border border-ocean-light/10 rounded-xl flex flex-col gap-3 transition-opacity ${link.hidden ? 'opacity-50' : ''}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-ocean-light/10 text-ink-faint">{link.icon}</span>
-                      {link.hidden && <span className="text-[10px] px-1.5 py-0.5 rounded bg-ocean-light/10 text-ink-faint">hidden</span>}
-                    </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-ink-faint uppercase tracking-widest">Hero Chips</p>
+                <p className="text-[11px] text-ink-faint mt-0.5">Shown as buttons next to "View Projects" in the hero.</p>
+              </div>
+              <button
+                onClick={() => setChipLinks(prev => [...prev, { label: '', href: '' }])}
+                className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors shrink-0"
+              >
+                + Add chip
+              </button>
+            </div>
+            {chipLinks.length > 0 && (
+              <div className="flex flex-col gap-2">
+                {chipLinks.map((chip, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <input
+                      value={chip.label}
+                      onChange={e => setChipLinks(prev => prev.map((c, j) => j === i ? { ...c, label: e.target.value } : c))}
+                      placeholder="Label"
+                      className="w-32 shrink-0 bg-space-card border border-ocean-light/10 rounded-lg px-3 py-2 text-sm text-ink-secondary placeholder:text-ink-faint focus:outline-none focus:border-star-gold/40"
+                    />
+                    <input
+                      value={chip.href}
+                      onChange={e => setChipLinks(prev => prev.map((c, j) => j === i ? { ...c, href: e.target.value } : c))}
+                      placeholder="URL or mailto: or tel:"
+                      className="flex-1 bg-space-card border border-ocean-light/10 rounded-lg px-3 py-2 text-sm text-ink-secondary placeholder:text-ink-faint focus:outline-none focus:border-star-gold/40"
+                    />
                     <button
-                      onClick={() => updateSocialLink(i, 'hidden', !link.hidden)}
-                      className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors"
+                      onClick={() => setChipLinks(prev => prev.filter((_, j) => j !== i))}
+                      className="text-xs px-3 py-2 border border-red-500/30 text-red-400/70 rounded-lg hover:border-red-500/50 hover:text-red-400 transition-colors shrink-0"
                     >
-                      {link.hidden ? 'Show' : 'Hide'}
+                      Remove
                     </button>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    {[
-                      { field: 'label', placeholder: 'Label' },
-                      { field: 'sub',   placeholder: 'Subtitle' },
-                      { field: 'href',  placeholder: 'URL' },
-                    ].map(({ field, placeholder }) => (
-                      <input
-                        key={field}
-                        value={link[field as keyof SocialLink] as string}
-                        onChange={e => updateSocialLink(i, field as keyof SocialLink, e.target.value)}
-                        placeholder={placeholder}
-                        className="bg-space-surface border border-ocean-light/15 rounded-lg px-3 py-2 text-sm text-ink-secondary placeholder:text-ink-faint focus:outline-none focus:border-star-gold/40"
-                      />
-                    ))}
+                ))}
+              </div>
+            )}
+          </div>
+
+          <hr className="border-ocean-dim/20" />
+
+          {/* My Story */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-ink-faint uppercase tracking-widest">My Story</p>
+              <button
+                onClick={() => setStoryItems(prev => [...prev, { title: '', body: '' }])}
+                className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors"
+              >
+                + Add card
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              {storyItems.map((item, i) => (
+                <div key={i} className="px-4 py-4 bg-space-card border border-ocean-light/10 rounded-xl flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <input
+                      value={item.title}
+                      onChange={e => setStoryItems(prev => prev.map((s, j) => j === i ? { ...s, title: e.target.value } : s))}
+                      placeholder="Title"
+                      className="flex-1 bg-space-surface border border-ocean-light/15 rounded-lg px-3 py-2 text-sm text-ink-secondary placeholder:text-ink-faint focus:outline-none focus:border-star-gold/40"
+                    />
+                    <button
+                      onClick={() => setStoryItems(prev => prev.filter((_, j) => j !== i))}
+                      className="text-xs px-3 py-2 border border-red-500/30 text-red-400/70 rounded-lg hover:border-red-500/50 hover:text-red-400 transition-colors shrink-0"
+                    >
+                      Remove
+                    </button>
                   </div>
+                  <textarea
+                    value={item.body}
+                    onChange={e => setStoryItems(prev => prev.map((s, j) => j === i ? { ...s, body: e.target.value } : s))}
+                    placeholder="Body"
+                    rows={2}
+                    className="w-full bg-space-surface border border-ocean-light/15 rounded-lg px-3 py-2 text-sm text-ink-secondary placeholder:text-ink-faint leading-relaxed resize-y focus:outline-none focus:border-star-gold/40"
+                  />
                 </div>
               ))}
             </div>

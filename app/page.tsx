@@ -5,17 +5,10 @@ import { ProjectCard } from '@/components/ProjectCard'
 import { BlogCard } from '@/components/ProjectCard'
 import { LinkCard } from '@/components/ProjectCard'
 
-const story = [
-  { title: 'University',        body: 'Where I learned to think in systems and ask why before how.' },
-  { title: 'Kenya',             body: 'Where I learned that technology only matters if it reaches real people.' },
-  { title: 'What I believe',    body: "Warmth and rigor aren't opposites. The best solutions have both." },
-  { title: 'Building toward',   body: 'A world where good engineering quietly makes life better.' },
-]
-
 export default async function Home() {
-  const projects                                              = (await getProjects()).slice(0, 2)
-  const posts                                                 = (await getBlogPosts()).slice(0, 3)
-  const { subheader, heroSubtitle, description, sectionOrder, socialLinks } = await getLandingSettings()
+  const projects                                                             = (await getProjects()).slice(0, 2)
+  const posts                                                               = (await getBlogPosts()).slice(0, 3)
+  const { subheader, heroSubtitle, description, sectionOrder, socialLinks, storyItems, chipLinks } = await getLandingSettings()
 
   const visibleLinks = socialLinks.filter(l => !l.hidden)
 
@@ -37,9 +30,9 @@ export default async function Home() {
       <section className="py-10">
         <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">My story</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {story.map(s => (
+          {storyItems.map((s, i) => (
             <div
-              key={s.title}
+              key={i}
               className="bg-space-card rounded-xl p-4 transition-all duration-300 ease-out
                 shadow-[0_2px_8px_rgba(0,0,0,0.45),inset_0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.04)]
                 hover:shadow-[0_0_0_1px_rgba(240,192,96,0.20),0_8px_24px_rgba(240,192,96,0.07),inset_0_1px_0_rgba(240,192,96,0.05)]
@@ -60,7 +53,7 @@ export default async function Home() {
         </div>
       </section>
     ),
-    blog: (
+    blog: posts.length > 0 ? (
       <section className="py-10">
         <div className="flex justify-between items-center mb-5">
           <p className="text-xs tracking-widest text-ocean-faint uppercase">Latest thoughts</p>
@@ -72,7 +65,7 @@ export default async function Home() {
           {posts.map(p => <BlogCard key={p.slug} post={p} />)}
         </div>
       </section>
-    ),
+    ) : null,
   }
 
   return (
@@ -90,20 +83,37 @@ export default async function Home() {
         <p className="text-base text-ocean-muted leading-relaxed mb-7 max-w-lg">
           {description}
         </p>
-        <Link
-          href="/projects"
-          className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"
-        >
-          View Projects
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/projects"
+            className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"
+          >
+            View Projects
+          </Link>
+          {chipLinks.map((chip, i) => (
+            <a
+              key={i}
+              href={chip.href}
+              target={chip.href.startsWith('http') ? '_blank' : undefined}
+              rel={chip.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              className="text-sm px-4 py-2 rounded-lg border border-ocean-light/20 text-ink-muted hover:border-star-gold/50 hover:text-star-gold transition-colors"
+            >
+              {chip.label}
+            </a>
+          ))}
+        </div>
       </section>
 
-      {sectionOrder.map((key, i) => (
-        <div key={key}>
-          <hr className="border-ocean-dim/20" />
-          {sections[key]}
-        </div>
-      ))}
+      {sectionOrder.map((key) => {
+        const content = sections[key]
+        if (!content) return null
+        return (
+          <div key={key}>
+            <hr className="border-ocean-dim/20" />
+            {content}
+          </div>
+        )
+      })}
 
     </div>
   )

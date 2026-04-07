@@ -1,7 +1,9 @@
 ---
-title: "Building in public — what I've learned so far"
-date: "2026.03.05"
-excerpt: "Logging my process openly has changed the way I work. Here's what surprised me most."
+title: Building in public — what I've learned so far2
+date: 2026.03.05
+excerpt: >-
+  Logging my process openly has changed the way I work. Here's what surprised me
+  most.2
 ---
 
 I started logging my projects publicly about two months ago.
@@ -35,3 +37,8 @@ That discomfort — the one that makes you want to edit out the failures — is 
 How to write about client projects without exposing things they'd prefer private. How to be honest about uncertainty without sounding unconfident. How to do this consistently when a project is hard and I don't feel like writing.
 
 Still working on it. But publicly.
+
+
+Yeah. this is exactly what I wanted.
+
+Hello~!

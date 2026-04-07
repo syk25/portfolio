@@ -11,7 +11,7 @@ export default async function ProjectsPage() {
       <p className="text-[14px] text-ocean-muted mb-10">
         Things I&apos;ve built — real problems, real people.
       </p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {projects.map(p => <ProjectCard key={p.slug} project={p} />)}
       </div>
     </div>

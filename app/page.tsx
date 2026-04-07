@@ -29,14 +29,14 @@ export default async function Home() {
 
       {/* Hero */}
       <section className="pt-16 pb-12">
-        <p className="text-[10px] tracking-widest text-star-gold uppercase mb-4">
+        <p className="text-xs tracking-widest text-star-gold uppercase mb-4">
           ✦ Backend · AI · Solutions · Sales
         </p>
         <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
           Hi, I&apos;m <span className="text-star-gold">[Your Name]</span>
           <br />I build things that matter.
         </h1>
-        <p className="text-[15px] text-ocean-muted leading-relaxed mb-6 max-w-[520px]">
+        <p className="text-base text-ocean-muted leading-relaxed mb-6 max-w-[520px]">
           From university labs to the fields of Kenya — I believe technology
           should serve people, not the other way around. I build with depth,
           curiosity, and warmth.
@@ -45,7 +45,7 @@ export default async function Home() {
           {roles.map(r => (
             <span
               key={r}
-              className="text-[11px] px-3 py-1 rounded-full bg-ocean-light/10 border border-ocean-light/20 text-ocean-light"
+              className="text-[13px] px-3 py-1 rounded-full bg-ocean-light/10 border border-ocean-light/20 text-ocean-light"
             >
               {r}
             </span>
@@ -54,13 +54,13 @@ export default async function Home() {
         <div className="flex gap-3">
           <Link
             href="/projects"
-            className="text-[13px] px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"
+            className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"
           >
             View Projects
           </Link>
           <Link
             href="/blog"
-            className="text-[13px] px-5 py-2.5 rounded-lg border border-ocean-light/30 text-ocean-light hover:border-ocean-light/60 transition-colors"
+            className="text-sm px-5 py-2.5 rounded-lg border border-ocean-light/30 text-ocean-light hover:border-ocean-light/60 transition-colors"
           >
             Read My Blog
           </Link>
@@ -71,15 +71,15 @@ export default async function Home() {
 
       {/* Story */}
       <section className="py-10">
-        <p className="text-[10px] tracking-widest text-ocean-faint uppercase mb-5">My story</p>
-        <div className="grid grid-cols-2 gap-2">
+        <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">My story</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {story.map(s => (
             <div
               key={s.title}
               className="bg-space-card border border-ocean-light/10 rounded-xl p-4"
             >
-              <h3 className="text-[13px] font-medium text-ink-secondary mb-1.5">{s.title}</h3>
-              <p className="text-[12px] text-ink-faint leading-relaxed">{s.body}</p>
+              <h3 className="text-sm font-medium text-ink-secondary mb-1.5">{s.title}</h3>
+              <p className="text-[13px] text-ink-faint leading-relaxed">{s.body}</p>
             </div>
           ))}
         </div>
@@ -90,12 +90,12 @@ export default async function Home() {
       {/* Projects */}
       <section className="py-10">
         <div className="flex justify-between items-center mb-5">
-          <p className="text-[10px] tracking-widest text-ocean-faint uppercase">Projects</p>
-          <Link href="/projects" className="text-[11px] text-star-gold hover:text-star-pale transition-colors">
+          <p className="text-xs tracking-widest text-ocean-faint uppercase">Projects</p>
+          <Link href="/projects" className="text-xs text-star-gold hover:text-star-pale transition-colors">
             view all →
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {projects.map(p => <ProjectCard key={p.slug} project={p} />)}
         </div>
       </section>
@@ -104,7 +104,7 @@ export default async function Home() {
 
       {/* Social links */}
       <section className="py-10">
-        <p className="text-[10px] tracking-widest text-ocean-faint uppercase mb-5">Find me</p>
+        <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">Find me</p>
         <div className="flex flex-col gap-2">
           {socialLinks.map(l => <LinkCard key={l.label} {...l} />)}
         </div>
@@ -115,8 +115,8 @@ export default async function Home() {
       {/* Blog */}
       <section className="py-10">
         <div className="flex justify-between items-center mb-5">
-          <p className="text-[10px] tracking-widest text-ocean-faint uppercase">Latest thoughts</p>
-          <Link href="/blog" className="text-[11px] text-star-gold hover:text-star-pale transition-colors">
+          <p className="text-xs tracking-widest text-ocean-faint uppercase">Latest thoughts</p>
+          <Link href="/blog" className="text-xs text-star-gold hover:text-star-pale transition-colors">
             view all →
           </Link>
         </div>

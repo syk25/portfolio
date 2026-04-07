@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Nav from '@/components/Nav'
 import Stars from '@/components/Stars'
+import ChatBot from '@/components/ChatBot'
 
 export const metadata: Metadata = {
   title: 'Your Name — Portfolio',
@@ -20,10 +21,11 @@ export default function RootLayout({
         <div className="relative z-10">
           <Nav />
           <main>{children}</main>
-          <footer className="border-t border-ocean-dim/30 py-6 text-center text-xs text-ink-dim mt-16">
+          <footer className="border-t border-ocean-dim/30 py-6 pb-20 text-center text-xs text-ink-dim mt-16">
             made with intention · not just code &nbsp;
             <span className="text-star-gold">✦</span>
           </footer>
+          <ChatBot />
         </div>
       </body>
     </html>

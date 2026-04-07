@@ -40,7 +40,7 @@ const config: Config = {
         mono: ['var(--font-mono)', 'monospace'],
       },
       maxWidth: {
-        content: 'min(90%, 720px)',
+        content: 'min(92%, 800px)',
       },
     },
   },

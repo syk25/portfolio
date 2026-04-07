@@ -34,17 +34,7 @@ export default async function Home() {
           Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
           <br />Let&apos;s build a better world.
         </h1>
-        <p
-          className="text-base leading-relaxed mb-7 font-medium"
-          style={{
-            backgroundImage:    'url(/earth.jpg)',
-            backgroundSize:     'cover',
-            backgroundPosition: 'center',
-            WebkitBackgroundClip: 'text',
-            backgroundClip:     'text',
-            color:              'transparent',
-          }}
-        >
+        <p className="text-base text-ocean-muted leading-relaxed mb-7">
           {description}
         </p>
         <Link

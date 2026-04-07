@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 const MOON_URL = '/moon.jpg'
 
 const PLANET_SIZE   = 1100  // must match the width style below
-const MAX_VISIBLE   = 100   // px of arc ever shown above viewport bottom
+const MAX_VISIBLE   = 200   // px of arc ever shown above viewport bottom
 const SCROLL_RATE   = 0.20  // px of rise per px scrolled
 
 export default function Planet() {

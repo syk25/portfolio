@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 // NASA "Blue Marble" (Apollo 17) — public domain, stored locally in /public
 const EARTH_URL = '/earth.jpg'
 
-const PLANET_SIZE   = 750   // must match the width style below
+const PLANET_SIZE   = 1100  // must match the width style below
 const MAX_VISIBLE   = 100   // px of arc ever shown above viewport bottom
 const SCROLL_RATE   = 0.20  // px of rise per px scrolled
 
@@ -42,7 +42,7 @@ export default function Planet() {
         position:           'fixed',
         bottom:             0,
         left:               '50%',
-        width:              '750px',
+        width:              '1100px',
         aspectRatio:        '1 / 1',
         borderRadius:       '50%',
         pointerEvents:      'none',
@@ -61,16 +61,6 @@ export default function Planet() {
         ].join(', '),
       }}
     >
-      {/* Atmosphere rim ring */}
-      <div
-        style={{
-          position:      'absolute',
-          inset:         '-4px',
-          borderRadius:  '50%',
-          boxShadow:     '0 0 22px 8px rgba(110,190,255,0.20)',
-          pointerEvents: 'none',
-        }}
-      />
     </div>
   )
 }

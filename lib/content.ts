@@ -93,10 +93,34 @@ export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
   }
 }
 
-const DEFAULT_DESCRIPTION =
-  "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound."
+export type LandingSettings = {
+  gnb:         string
+  footer:      string
+  subheader:   string
+  description: string
+}
 
+const DEFAULTS: LandingSettings = {
+  gnb:         'your name ✦',
+  footer:      'made with intention · not just code',
+  subheader:   '✦ Backend · AI · Solutions · Sales',
+  description: "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound.",
+}
+
+export async function getLandingSettings(): Promise<LandingSettings> {
+  const raw = await blobGet('settings/landing.json')
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw)
+      return { ...DEFAULTS, ...parsed }
+    } catch { /* fall through */ }
+  }
+  // Backward compat: check old hero-description.txt
+  const desc = await blobGet('settings/hero-description.txt')
+  return { ...DEFAULTS, ...(desc ? { description: desc.trim() } : {}) }
+}
+
+// Keep for any existing callers
 export async function getHeroDescription(): Promise<string> {
-  const raw = await blobGet('settings/hero-description.txt')
-  return raw?.trim() || DEFAULT_DESCRIPTION
+  return (await getLandingSettings()).description
 }

@@ -4,21 +4,21 @@ import { useRouter } from 'next/navigation'
 
 type BlogPost = { slug: string; title: string; date: string; excerpt: string }
 type Project  = { slug: string; title: string; date: string; description: string; tags: string[] }
-type Tab = 'blog' | 'projects' | 'settings'
-
-const DEFAULT_DESCRIPTION =
-  "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound."
+type Tab = 'blog' | 'projects' | 'landing'
 
 export default function AdminPage() {
   const router = useRouter()
-  const [tab, setTab]         = useState<Tab>('blog')
-  const [posts, setPosts]     = useState<BlogPost[]>([])
+  const [tab, setTab]           = useState<Tab>('blog')
+  const [posts, setPosts]       = useState<BlogPost[]>([])
   const [projects, setProjects] = useState<Project[]>([])
 
-  // Settings state
-  const [description, setDescription]     = useState('')
-  const [descSaved, setDescSaved]         = useState(false)
-  const [descSaving, setDescSaving]       = useState(false)
+  // Landing page settings
+  const [gnb,         setGnb]         = useState('')
+  const [footer,      setFooter]      = useState('')
+  const [subheader,   setSubheader]   = useState('')
+  const [description, setDescription] = useState('')
+  const [saving,      setSaving]      = useState(false)
+  const [saved,       setSaved]       = useState(false)
 
   const fetchContent = useCallback(async () => {
     const [blogRes, projRes] = await Promise.all([
@@ -33,7 +33,10 @@ export default function AdminPage() {
     const res = await fetch('/api/content/settings')
     if (res.ok) {
       const data = await res.json()
-      setDescription(data.description ?? DEFAULT_DESCRIPTION)
+      setGnb(data.gnb ?? '')
+      setFooter(data.footer ?? '')
+      setSubheader(data.subheader ?? '')
+      setDescription(data.description ?? '')
     }
   }, [])
 
@@ -52,17 +55,17 @@ export default function AdminPage() {
     if (res.ok) await fetchContent()
   }
 
-  async function saveDescription() {
-    setDescSaving(true)
+  async function saveLanding() {
+    setSaving(true)
     const res = await fetch('/api/content/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ description }),
+      body: JSON.stringify({ gnb, footer, subheader, description }),
     })
-    setDescSaving(false)
+    setSaving(false)
     if (res.ok) {
-      setDescSaved(true)
-      setTimeout(() => setDescSaved(false), 2000)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
     }
   }
 
@@ -83,7 +86,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-space-surface border border-ocean-light/10 rounded-lg p-1 w-fit">
-        {(['blog', 'projects', 'settings'] as Tab[]).map(t => (
+        {(['blog', 'projects', 'landing'] as Tab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -91,38 +94,45 @@ export default function AdminPage() {
               tab === t ? 'bg-star-gold text-[#100c00] font-medium' : 'text-ink-muted hover:text-ink-secondary'
             }`}
           >
-            {t}
+            {t === 'landing' ? 'Landing Page' : t}
           </button>
         ))}
       </div>
 
-      {/* Settings tab */}
-      {tab === 'settings' && (
-        <div className="flex flex-col gap-4">
-          <div>
-            <p className="text-xs text-ink-faint uppercase tracking-widest mb-2">Hero description</p>
-            <textarea
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              rows={5}
-              className="w-full bg-space-card border border-ocean-light/10 rounded-xl px-4 py-3 text-sm text-ink-secondary leading-relaxed resize-y focus:outline-none focus:border-star-gold/40"
-            />
-          </div>
+      {/* Landing page tab */}
+      {tab === 'landing' && (
+        <div className="flex flex-col gap-5">
+          {[
+            { label: 'GNB',         value: gnb,         set: setGnb,         rows: 1 },
+            { label: 'Footer',      value: footer,      set: setFooter,      rows: 1 },
+            { label: 'Subheader',   value: subheader,   set: setSubheader,   rows: 1 },
+            { label: 'Description', value: description, set: setDescription, rows: 4 },
+          ].map(({ label, value, set, rows }) => (
+            <div key={label}>
+              <p className="text-xs text-ink-faint uppercase tracking-widest mb-2">{label}</p>
+              <textarea
+                value={value}
+                onChange={e => set(e.target.value)}
+                rows={rows}
+                className="w-full bg-space-card border border-ocean-light/10 rounded-xl px-4 py-3 text-sm text-ink-secondary leading-relaxed resize-y focus:outline-none focus:border-star-gold/40"
+              />
+            </div>
+          ))}
           <div className="flex items-center gap-3">
             <button
-              onClick={saveDescription}
-              disabled={descSaving}
+              onClick={saveLanding}
+              disabled={saving}
               className="text-xs px-4 py-1.5 bg-star-gold text-[#100c00] font-medium rounded-lg hover:bg-star-pale transition-colors disabled:opacity-50"
             >
-              {descSaving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving…' : 'Save'}
             </button>
-            {descSaved && <p className="text-xs text-star-gold">Saved</p>}
+            {saved && <p className="text-xs text-star-gold">Saved</p>}
           </div>
         </div>
       )}
 
       {/* Content tabs (blog / projects) */}
-      {tab !== 'settings' && (
+      {tab !== 'landing' && (
         <>
           {/* List header */}
           <div className="flex justify-between items-center mb-3">

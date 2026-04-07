@@ -8,7 +8,7 @@ const links = [
   { href: '/blog',     label: 'blog'     },
 ]
 
-export default function Nav() {
+export default function Nav({ brandName }: { brandName: string }) {
   const pathname = usePathname()
 
   return (
@@ -17,7 +17,7 @@ export default function Nav() {
         href="/"
         className="text-star-gold font-medium text-sm tracking-wide hover:text-star-pale transition-colors"
       >
-        your name ✦
+        {brandName}
       </Link>
       <div className="flex gap-6">
         {links.map(l => (

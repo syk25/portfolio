@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getProjects, getBlogPosts, getHeroDescription } from '@/lib/content'
+import { getProjects, getBlogPosts, getLandingSettings } from '@/lib/content'
 import { ProjectCard } from '@/components/ProjectCard'
 import { BlogCard } from '@/components/ProjectCard'
 import { LinkCard } from '@/components/ProjectCard'
@@ -18,9 +18,9 @@ const story = [
 ]
 
 export default async function Home() {
-  const projects     = (await getProjects()).slice(0, 2)
-  const posts        = (await getBlogPosts()).slice(0, 3)
-  const description  = await getHeroDescription()
+  const projects                   = (await getProjects()).slice(0, 2)
+  const posts                      = (await getBlogPosts()).slice(0, 3)
+  const { subheader, description } = await getLandingSettings()
 
   return (
     <div className="max-w-content mx-auto px-6">
@@ -28,7 +28,7 @@ export default async function Home() {
       {/* Hero */}
       <section className="pt-16 pb-12">
         <p className="text-xs tracking-widest text-star-gold uppercase mb-4">
-          ✦ Backend · AI · Solutions · Sales
+          {subheader}
         </p>
         <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
           Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>

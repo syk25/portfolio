@@ -1,9 +1,8 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-// Real NASA "Blue Marble" (Apollo 17) — public domain via Wikimedia Commons
-const EARTH_URL =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/1024px-The_Earth_seen_from_Apollo_17.jpg'
+// NASA "Blue Marble" (Apollo 17) — public domain, stored locally in /public
+const EARTH_URL = '/earth.jpg'
 
 const PLANET_SIZE   = 750   // must match the width style below
 const MAX_VISIBLE   = 100   // px of arc ever shown above viewport bottom

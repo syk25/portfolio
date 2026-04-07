@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
 import matter from 'gray-matter'
 import { verifyCookie, COOKIE_NAME } from '@/lib/session'
-
-const projectsDir = path.join(process.cwd(), 'content/projects')
+import { blobList, blobGet, blobPut } from '@/lib/blob'
 
 async function checkAuth(req: NextRequest) {
   return await verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
 }
 
 export async function GET() {
-  const files = fs.readdirSync(projectsDir).filter(f => f.endsWith('.md'))
-  const projects = files.map(file => {
-    const slug = file.replace('.md', '')
-    const raw = fs.readFileSync(path.join(projectsDir, file), 'utf8')
+  const blobs = await blobList('projects/')
+  const projects = await Promise.all(blobs.map(async ({ pathname, url }) => {
+    const res = await fetch(url, { cache: 'no-store' })
+    const raw = await res.text()
     const { data, content } = matter(raw)
+    const slug = pathname.replace('projects/', '').replace('.md', '')
     return {
       slug,
       title:       data.title       ?? '',
@@ -26,7 +24,7 @@ export async function GET() {
       github:      data.github      ?? '',
       content,
     }
-  })
+  }))
   return NextResponse.json(projects)
 }
 
@@ -37,10 +35,9 @@ export async function POST(req: NextRequest) {
   if (!slug || !/^[a-z0-9-]+$/.test(slug))
     return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
 
-  const filePath = path.join(projectsDir, `${slug}.md`)
-  if (fs.existsSync(filePath))
-    return NextResponse.json({ error: 'Slug already exists' }, { status: 409 })
+  const existing = await blobGet(`projects/${slug}.md`)
+  if (existing) return NextResponse.json({ error: 'Slug already exists' }, { status: 409 })
 
-  fs.writeFileSync(filePath, matter.stringify(content ?? '', { title, description, date, tags, demo, github }))
+  await blobPut(`projects/${slug}.md`, matter.stringify(content ?? '', { title, description, date, tags, demo, github }))
   return NextResponse.json({ slug }, { status: 201 })
 }

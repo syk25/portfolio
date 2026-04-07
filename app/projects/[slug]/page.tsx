@@ -1,11 +1,6 @@
-import { getProject, getProjects } from '@/lib/content'
+import { getProject } from '@/lib/content'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-
-export async function generateStaticParams() {
-  const projects = await getProjects()
-  return projects.map(p => ({ slug: p.slug }))
-}
 
 export default async function ProjectPage({
   params,

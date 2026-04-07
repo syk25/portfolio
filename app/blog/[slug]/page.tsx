@@ -1,11 +1,6 @@
-import { getBlogPost, getBlogPosts } from '@/lib/content'
+import { getBlogPost } from '@/lib/content'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-
-export async function generateStaticParams() {
-  const posts = await getBlogPosts()
-  return posts.map(p => ({ slug: p.slug }))
-}
 
 export default async function BlogPostPage({
   params,

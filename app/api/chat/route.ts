@@ -1,35 +1,29 @@
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import fs from 'fs'
-import path from 'path'
 import matter from 'gray-matter'
+import { blobGet, blobList } from '@/lib/blob'
 
 const client = new Anthropic()
 
-function readDir(dir: string) {
-  return fs.readdirSync(dir)
-    .filter(f => f.endsWith('.md'))
-    .map(f => {
-      const raw = fs.readFileSync(path.join(dir, f), 'utf8')
-      const { data, content } = matter(raw)
-      return { data, content }
-    })
-}
-
-function buildSystemPrompt(): string {
-  const aboutPath = path.join(process.cwd(), 'content/about.md')
-  const aboutRaw  = fs.existsSync(aboutPath) ? fs.readFileSync(aboutPath, 'utf8') : ''
+async function buildSystemPrompt(): Promise<string> {
+  const aboutRaw = (await blobGet('about.md')) ?? ''
   const { data: aboutData, content: aboutContent } = matter(aboutRaw)
 
-  const projects = readDir(path.join(process.cwd(), 'content/projects'))
-    .map(({ data, content }) =>
-      `### ${data.title}\nDate: ${data.date}\nTags: ${(data.tags ?? []).join(', ')}\n${content}`
-    ).join('\n\n---\n\n')
+  const projectBlobs = await blobList('projects/')
+  const projects = (await Promise.all(projectBlobs.map(async ({ url }) => {
+    const res = await fetch(url, { cache: 'no-store' })
+    const raw = await res.text()
+    const { data, content } = matter(raw)
+    return `### ${data.title}\nDate: ${data.date}\nTags: ${(data.tags ?? []).join(', ')}\n${content}`
+  }))).join('\n\n---\n\n')
 
-  const posts = readDir(path.join(process.cwd(), 'content/blog'))
-    .map(({ data, content }) =>
-      `### ${data.title}\nDate: ${data.date}\n${content}`
-    ).join('\n\n---\n\n')
+  const blogBlobs = await blobList('blog/')
+  const posts = (await Promise.all(blogBlobs.map(async ({ url }) => {
+    const res = await fetch(url, { cache: 'no-store' })
+    const raw = await res.text()
+    const { data, content } = matter(raw)
+    return `### ${data.title}\nDate: ${data.date}\n${content}`
+  }))).join('\n\n---\n\n')
 
   return `You are a portfolio assistant for ${aboutData.name ?? 'this person'}. \
 Your job is to answer questions visitors have about them — their background, projects, writing, and skills.
@@ -57,7 +51,7 @@ export async function POST(req: NextRequest) {
   const stream = client.messages.stream({
     model:      'claude-haiku-4-5-20251001',
     max_tokens: 1024,
-    system:     buildSystemPrompt(),
+    system:     await buildSystemPrompt(),
     messages,
   })
 

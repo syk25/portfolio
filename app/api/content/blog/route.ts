@@ -1,23 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
 import matter from 'gray-matter'
 import { verifyCookie, COOKIE_NAME } from '@/lib/session'
-
-const blogDir = path.join(process.cwd(), 'content/blog')
+import { blobList, blobGet, blobPut } from '@/lib/blob'
 
 async function checkAuth(req: NextRequest) {
   return await verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
 }
 
 export async function GET() {
-  const files = fs.readdirSync(blogDir).filter(f => f.endsWith('.md'))
-  const posts = files.map(file => {
-    const slug = file.replace('.md', '')
-    const raw = fs.readFileSync(path.join(blogDir, file), 'utf8')
+  const blobs = await blobList('blog/')
+  const posts = await Promise.all(blobs.map(async ({ pathname, url }) => {
+    const res = await fetch(url, { cache: 'no-store' })
+    const raw = await res.text()
     const { data, content } = matter(raw)
+    const slug = pathname.replace('blog/', '').replace('.md', '')
     return { slug, title: data.title ?? '', date: data.date ?? '', excerpt: data.excerpt ?? '', content }
-  })
+  }))
   return NextResponse.json(posts)
 }
 
@@ -28,10 +26,9 @@ export async function POST(req: NextRequest) {
   if (!slug || !/^[a-z0-9-]+$/.test(slug))
     return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
 
-  const filePath = path.join(blogDir, `${slug}.md`)
-  if (fs.existsSync(filePath))
-    return NextResponse.json({ error: 'Slug already exists' }, { status: 409 })
+  const existing = await blobGet(`blog/${slug}.md`)
+  if (existing) return NextResponse.json({ error: 'Slug already exists' }, { status: 409 })
 
-  fs.writeFileSync(filePath, matter.stringify(content ?? '', { title, date, excerpt }))
+  await blobPut(`blog/${slug}.md`, matter.stringify(content ?? '', { title, date, excerpt }))
   return NextResponse.json({ slug }, { status: 201 })
 }

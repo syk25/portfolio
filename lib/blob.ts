@@ -31,6 +31,7 @@ export async function blobPut(pathname: string, content: string): Promise<void> 
   await put(pathname, content, {
     access:          'private',
     addRandomSuffix: false,
+    allowOverwrite:  true,
     token,
   })
 }

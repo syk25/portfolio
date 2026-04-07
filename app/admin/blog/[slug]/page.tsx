@@ -44,8 +44,10 @@ export default function BlogEditPage({ params }: { params: Promise<{ slug: strin
     if (res.ok) {
       router.push('/admin')
     } else {
-      const data = await res.json()
-      setError(data.error ?? 'Something went wrong')
+      const text = await res.text()
+      let msg = 'Something went wrong'
+      try { msg = JSON.parse(text).error ?? msg } catch { /* non-JSON body */ }
+      setError(msg)
     }
     setSaving(false)
   }

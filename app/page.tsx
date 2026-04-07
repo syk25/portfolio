@@ -27,11 +27,12 @@ export default async function Home() {
 
       {/* Hero */}
       <section className="relative pt-16 pb-12 overflow-hidden">
-        {/* Nebula background */}
+        {/* Nebula + aurora background */}
         <div className="hero-nebula" aria-hidden="true">
           <div className="nebula-orb nebula-orb-1" />
           <div className="nebula-orb nebula-orb-2" />
           <div className="nebula-orb nebula-orb-3" />
+          <div className="nebula-aurora" />
         </div>
 
         <div className="relative z-10">

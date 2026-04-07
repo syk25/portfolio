@@ -5,7 +5,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="card-shimmer block bg-space-surface rounded-xl group select-none
+      className="block bg-space-surface rounded-xl group select-none
         transition-all duration-300 ease-out
         shadow-[0_2px_12px_rgba(0,0,0,0.55),inset_0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.04)]
         hover:shadow-[0_0_0_1px_rgba(240,192,96,0.28),0_16px_48px_rgba(240,192,96,0.10),inset_0_1px_0_rgba(240,192,96,0.07)]
@@ -69,7 +69,7 @@ export function LinkCard({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="card-shimmer flex items-center gap-3 px-4 py-3.5 rounded-xl bg-space-card group select-none
+      className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-space-card group select-none
         transition-all duration-250 ease-out
         shadow-[0_2px_8px_rgba(0,0,0,0.5),inset_0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.04)]
         hover:shadow-[0_0_0_1px_rgba(240,192,96,0.24),0_8px_28px_rgba(240,192,96,0.09),inset_0_1px_0_rgba(240,192,96,0.06)]

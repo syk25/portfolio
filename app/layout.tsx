@@ -26,7 +26,7 @@ export default async function RootLayout({
         <div className="relative z-10">
           <Nav brandName={gnb} />
           <main>{children}</main>
-          <footer className="border-t border-ocean-dim/30 py-6 pb-20 text-center text-xs text-ink-dim mt-16">
+          <footer className="border-t border-ocean-dim/30 py-6 pb-20 text-center text-xs text-white mt-16">
             {footer} &nbsp;
             <span className="text-star-gold">✦</span>
           </footer>

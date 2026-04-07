@@ -16,7 +16,7 @@ html {
 }
 
 body {
-  background-color: #080e1a;
+  background-color: #000000;
   color: #e8eef8;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -24,7 +24,7 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #080e1a; }
+::-webkit-scrollbar-track { background: #000000; }
 ::-webkit-scrollbar-thumb { background: #2a4a6a; border-radius: 3px; }
 
 /* Star twinkle animation */

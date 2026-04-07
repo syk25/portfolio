@@ -9,7 +9,7 @@ const config: Config = {
     extend: {
       colors: {
         space: {
-          deep:    '#080e1a',
+          deep:    '#000000',
           mid:     '#0e1e38',
           surface: '#0a1428',
           card:    '#0f1e38',

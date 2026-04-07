@@ -4,13 +4,12 @@ import { useEffect, useRef } from 'react'
 interface Star {
   x: number
   y: number
-  r: number
+  r: number          // core radius
   gold: boolean
   baseOp: number
   op: number
   peakOp: number
   phase: 'idle' | 'brightening' | 'dimming'
-  rotation: number
 }
 
 export default function Stars() {
@@ -26,51 +25,53 @@ export default function Stars() {
 
     const makeStars = () => {
       starsRef.current = Array.from({ length: 180 }, () => {
-        // Three tiers so the sky looks real:
-        // 65% small (1.2–2.8px), 25% medium (3–5px), 10% bright (5.5–9px)
         const tier = Math.random()
+        // core radius tiers
         const r = tier < 0.10
-          ? Math.random() * 3.5 + 5.5   // bright: 5.5–9px
+          ? Math.random() * 1.6 + 2.4   // bright: 2.4–4px  (10%)
           : tier < 0.35
-          ? Math.random() * 2.0 + 3.0   // medium: 3–5px
-          : Math.random() * 1.6 + 1.2   // small: 1.2–2.8px
+          ? Math.random() * 1.0 + 1.2   // medium: 1.2–2.2px (25%)
+          : Math.random() * 0.7 + 0.5   // small: 0.5–1.2px  (65%)
 
         const baseOp = tier < 0.10
-          ? 0.55 + Math.random() * 0.35  // bright stars: 0.55–0.90
+          ? 0.70 + Math.random() * 0.28
           : tier < 0.35
-          ? 0.35 + Math.random() * 0.30  // medium: 0.35–0.65
-          : 0.20 + Math.random() * 0.25  // small: 0.20–0.45
+          ? 0.45 + Math.random() * 0.30
+          : 0.25 + Math.random() * 0.30
 
         return {
-          x:        Math.random() * canvas.width,
-          y:        Math.random() * canvas.height,
+          x:      Math.random() * canvas.width,
+          y:      Math.random() * canvas.height,
           r,
-          gold:     Math.random() < 0.07,
+          gold:   Math.random() < 0.07,
           baseOp,
-          op:       baseOp,
-          peakOp:   Math.min(0.98, baseOp * 1.8),
-          phase:    'idle' as const,
-          rotation: Math.random() * (Math.PI / 4),
+          op:     baseOp,
+          peakOp: Math.min(0.98, baseOp * 1.6),
+          phase:  'idle' as const,
         }
       })
     }
 
-    const drawSparkle = (x: number, y: number, r: number, rotation: number) => {
-      const inner = r * 0.07
+    // Soft glowing circle — bright core fading to transparent halo.
+    // This is how stars actually look: diffraction + atmosphere bloom.
+    const drawStar = (s: Star) => {
+      const glowR = s.r * 4.5   // halo extends ~4.5× the core
+      const grad  = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR)
+
+      const color = s.gold ? '240,200,90' : '215,232,255'
+      grad.addColorStop(0,    `rgba(${color},${s.op})`)
+      grad.addColorStop(0.15, `rgba(${color},${s.op * 0.85})`)
+      grad.addColorStop(0.45, `rgba(${color},${s.op * 0.30})`)
+      grad.addColorStop(1,    `rgba(${color},0)`)
+
       ctx.beginPath()
-      for (let i = 0; i < 4; i++) {
-        const a  = (i / 4) * Math.PI * 2 + rotation
-        const ia = a + Math.PI / 4
-        if (i === 0) ctx.moveTo(x + Math.cos(a) * r,    y + Math.sin(a) * r)
-        else         ctx.lineTo(x + Math.cos(a) * r,    y + Math.sin(a) * r)
-        ctx.lineTo(x + Math.cos(ia) * inner, y + Math.sin(ia) * inner)
-      }
-      ctx.closePath()
+      ctx.arc(s.x, s.y, glowR, 0, Math.PI * 2)
+      ctx.fillStyle = grad
+      ctx.fill()
     }
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
       starsRef.current.forEach(s => {
         if (s.phase === 'brightening') {
           s.op += (s.peakOp - s.op) * 0.07
@@ -79,15 +80,8 @@ export default function Stars() {
           s.op += (s.baseOp - s.op) * 0.018
           if (Math.abs(s.op - s.baseOp) < 0.004) { s.op = s.baseOp; s.phase = 'idle' }
         }
-
-        ctx.fillStyle = s.gold
-          ? `rgba(240,200,90,${s.op})`
-          : `rgba(215,232,255,${s.op})`
-
-        drawSparkle(s.x, s.y, s.r, s.rotation)
-        ctx.fill()
+        drawStar(s)
       })
-
       rafRef.current = requestAnimationFrame(render)
     }
 

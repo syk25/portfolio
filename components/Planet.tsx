@@ -44,8 +44,7 @@ export default function Planet() {
         position:           'fixed',
         bottom:             0,
         left:               '50%',
-        // Fixed pixel size so it never scales wider than the viewport content
-        width:              '1100px',
+        width:              '750px',
         aspectRatio:        '1 / 1',
         borderRadius:       '50%',
         pointerEvents:      'none',

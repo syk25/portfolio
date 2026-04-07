@@ -102,7 +102,7 @@ export type LandingSettings = {
 }
 
 const DEFAULTS: LandingSettings = {
-  gnb:          'your name ✦',
+  gnb:          'Seyoun Kim ✦',
   footer:       'made with intention · not just code',
   subheader:    '✦ Backend · AI · Solutions · Sales',
   heroSubtitle: "Let's build a better world.",

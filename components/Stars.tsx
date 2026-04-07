@@ -25,16 +25,30 @@ export default function Stars() {
     if (!ctx) return
 
     const makeStars = () => {
-      starsRef.current = Array.from({ length: 220 }, () => {
-        const baseOp = 0.28 + Math.random() * 0.42   // 0.28 – 0.70, clearly visible
+      starsRef.current = Array.from({ length: 180 }, () => {
+        // Three tiers so the sky looks real:
+        // 65% small (1.2–2.8px), 25% medium (3–5px), 10% bright (5.5–9px)
+        const tier = Math.random()
+        const r = tier < 0.10
+          ? Math.random() * 3.5 + 5.5   // bright: 5.5–9px
+          : tier < 0.35
+          ? Math.random() * 2.0 + 3.0   // medium: 3–5px
+          : Math.random() * 1.6 + 1.2   // small: 1.2–2.8px
+
+        const baseOp = tier < 0.10
+          ? 0.55 + Math.random() * 0.35  // bright stars: 0.55–0.90
+          : tier < 0.35
+          ? 0.35 + Math.random() * 0.30  // medium: 0.35–0.65
+          : 0.20 + Math.random() * 0.25  // small: 0.20–0.45
+
         return {
           x:        Math.random() * canvas.width,
           y:        Math.random() * canvas.height,
-          r:        Math.random() * 1.8 + 0.5,
-          gold:     Math.random() < 0.08,
+          r,
+          gold:     Math.random() < 0.07,
           baseOp,
           op:       baseOp,
-          peakOp:   Math.min(0.95, baseOp * 1.9),
+          peakOp:   Math.min(0.98, baseOp * 1.8),
           phase:    'idle' as const,
           rotation: Math.random() * (Math.PI / 4),
         }
@@ -42,7 +56,7 @@ export default function Stars() {
     }
 
     const drawSparkle = (x: number, y: number, r: number, rotation: number) => {
-      const inner = r * 0.08
+      const inner = r * 0.07
       ctx.beginPath()
       for (let i = 0; i < 4; i++) {
         const a  = (i / 4) * Math.PI * 2 + rotation
@@ -59,16 +73,16 @@ export default function Stars() {
 
       starsRef.current.forEach(s => {
         if (s.phase === 'brightening') {
-          s.op += (s.peakOp - s.op) * 0.08
+          s.op += (s.peakOp - s.op) * 0.07
           if (Math.abs(s.op - s.peakOp) < 0.008) { s.op = s.peakOp; s.phase = 'dimming' }
         } else if (s.phase === 'dimming') {
-          s.op += (s.baseOp - s.op) * 0.02
+          s.op += (s.baseOp - s.op) * 0.018
           if (Math.abs(s.op - s.baseOp) < 0.004) { s.op = s.baseOp; s.phase = 'idle' }
         }
 
         ctx.fillStyle = s.gold
-          ? `rgba(240,192,96,${s.op})`
-          : `rgba(210,228,255,${s.op})`
+          ? `rgba(240,200,90,${s.op})`
+          : `rgba(215,232,255,${s.op})`
 
         drawSparkle(s.x, s.y, s.r, s.rotation)
         ctx.fill()
@@ -79,12 +93,11 @@ export default function Stars() {
 
     const triggerTwinkle = () => {
       starsRef.current.forEach(s => {
-        if (s.phase === 'idle' && Math.random() < 0.20) s.phase = 'brightening'
+        if (s.phase === 'idle' && Math.random() < 0.18) s.phase = 'brightening'
       })
     }
 
-    // Trigger random twinkles on a timer so they happen without scrolling too
-    const twinkleInterval = setInterval(triggerTwinkle, 1800)
+    const twinkleInterval = setInterval(triggerTwinkle, 1600)
 
     const resize = () => {
       canvas.width  = window.innerWidth

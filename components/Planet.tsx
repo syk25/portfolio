@@ -1,6 +1,14 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
+// Real NASA "Blue Marble" (Apollo 17) — public domain via Wikimedia Commons
+const EARTH_URL =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/1024px-The_Earth_seen_from_Apollo_17.jpg'
+
+// Maximum pixels of planet arc visible above viewport bottom, ever.
+// Keep this well below any content so it never overlaps text.
+const MAX_VISIBLE_PX = 220
+
 export default function Planet() {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -8,24 +16,24 @@ export default function Planet() {
     const el = ref.current
     if (!el) return
 
-    const SIZE = el.offsetWidth   // actual rendered size
-
-    const onScroll = () => {
-      // Planet is fully hidden at scroll=0, rises as user scrolls.
-      // Offset: how many px the planet is translated below the viewport.
-      // At scroll=0 → offset=SIZE (completely below viewport bottom).
-      // Rate 0.28: every 100px scrolled raises planet ~28px.
-      // Floor at SIZE*0.38 so planet never covers more than ~62% of its height.
+    const update = () => {
+      const size   = el.offsetWidth
+      // Offset = how far planet is pushed down below the viewport bottom.
+      // SIZE offset → completely hidden. (SIZE - MAX_VISIBLE_PX) → arc shows.
       const offset = Math.max(
-        SIZE * 0.38,
-        SIZE - window.scrollY * 0.28,
+        size - MAX_VISIBLE_PX,
+        size - window.scrollY * 0.30,
       )
       el.style.transform = `translateX(-50%) translateY(${offset}px)`
     }
 
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
   }, [])
 
   return (
@@ -33,46 +41,37 @@ export default function Planet() {
       ref={ref}
       aria-hidden="true"
       style={{
-        position:      'fixed',
-        bottom:        0,
-        left:          '50%',
-        width:         'clamp(520px, 85vw, 920px)',
-        aspectRatio:   '1 / 1',
-        borderRadius:  '50%',
-        pointerEvents: 'none',
-        zIndex:        2,
-        // Earth — lit from upper-left, night side bottom-right
-        background: `radial-gradient(
-          ellipse at 36% 28%,
-          #8fd4f0 0%,
-          #5cb8de 7%,
-          #4aa87a 17%,
-          #38905e 26%,
-          #2a7296 38%,
-          #1a4d78 52%,
-          #0e2d50 67%,
-          #050f22 82%,
-          #000000 100%
-        )`,
+        position:           'fixed',
+        bottom:             0,
+        left:               '50%',
+        // Fixed pixel size so it never scales wider than the viewport content
+        width:              '1100px',
+        aspectRatio:        '1 / 1',
+        borderRadius:       '50%',
+        pointerEvents:      'none',
+        zIndex:             2,
+        backgroundImage:    `url(${EARTH_URL})`,
+        backgroundSize:     'cover',
+        backgroundPosition: 'center center',
         boxShadow: [
-          // Night-side shadow (inset, from bottom-right)
-          'inset -70px -50px 120px rgba(0,0,0,0.88)',
-          // Subtle lit-side highlight
-          'inset 18px 14px 50px rgba(255,255,255,0.04)',
-          // Atmosphere halo
-          '0 0 90px 35px rgba(60,130,200,0.10)',
-          '0 0 180px 70px rgba(40,90,150,0.06)',
+          // Night-side shadow from bottom-right
+          'inset -90px -65px 160px rgba(0,0,0,0.88)',
+          // Lit-side micro-highlight
+          'inset 24px 18px 70px rgba(255,255,255,0.04)',
+          // Atmosphere glow
+          '0 0 100px 40px rgba(60,140,210,0.13)',
+          '0 0 220px 90px rgba(40,90,160,0.07)',
         ].join(', '),
       }}
     >
-      {/* Thin atmosphere rim — slightly blurred ring */}
+      {/* Atmosphere rim ring */}
       <div
         style={{
-          position:     'absolute',
-          inset:        '-3px',
-          borderRadius: '50%',
-          boxShadow:    '0 0 18px 6px rgba(100,180,240,0.18)',
-          pointerEvents:'none',
+          position:      'absolute',
+          inset:         '-4px',
+          borderRadius:  '50%',
+          boxShadow:     '0 0 22px 8px rgba(110,190,255,0.20)',
+          pointerEvents: 'none',
         }}
       />
     </div>

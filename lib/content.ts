@@ -64,6 +64,7 @@ export async function getProject(slug: string): Promise<Project | undefined> {
     tags:        data.tags        ?? [],
     demo:        data.demo        ?? '',
     github:      data.github      ?? '',
+    hidden:      data.hidden      ?? false,
     content:     await toHtml(content),
   }
 }
@@ -97,6 +98,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
     title:   data.title   ?? '',
     date:    data.date    ?? '',
     excerpt: data.excerpt ?? '',
+    hidden:  data.hidden  ?? false,
     content: await toHtml(content),
   }
 }

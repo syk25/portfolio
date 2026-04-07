@@ -3,19 +3,27 @@ import { useState, useRef, useEffect } from 'react'
 
 type Message = { role: 'user' | 'assistant'; content: string }
 
-const SUGGESTIONS = [
+const DEFAULT_SUGGESTIONS = [
   'What projects have you built?',
   'What do you believe in?',
   "What's your background?",
 ]
 
 export default function ChatBot() {
-  const [open, setOpen]         = useState(false)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput]       = useState('')
-  const [loading, setLoading]   = useState(false)
-  const bottomRef               = useRef<HTMLDivElement>(null)
-  const inputRef                = useRef<HTMLInputElement>(null)
+  const [open, setOpen]               = useState(false)
+  const [messages, setMessages]       = useState<Message[]>([])
+  const [input, setInput]             = useState('')
+  const [loading, setLoading]         = useState(false)
+  const [suggestions, setSuggestions] = useState<string[]>(DEFAULT_SUGGESTIONS)
+  const bottomRef                     = useRef<HTMLDivElement>(null)
+  const inputRef                      = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    fetch('/api/content/chatbot')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.suggestions?.length) setSuggestions(data.suggestions) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -101,7 +109,7 @@ export default function ChatBot() {
             {messages.length === 0 && (
               <div className="flex flex-col gap-2 mt-2">
                 <p className="text-xs text-ink-faint mb-1">Try asking:</p>
-                {SUGGESTIONS.map(s => (
+                {suggestions.map(s => (
                   <button key={s} onClick={() => send(s)}
                     className="text-left text-xs px-3 py-2 rounded-lg border border-ocean-light/15 text-ink-muted hover:border-ocean-light/35 hover:text-ink-secondary transition-colors">
                     {s}

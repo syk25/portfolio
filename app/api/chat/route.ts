@@ -43,13 +43,33 @@ ${projects}
 ${posts}`
 }
 
+async function getCustomInstructions(): Promise<string> {
+  const raw = await blobGet('settings/chatbot.json')
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw)
+      return parsed.customInstructions ?? ''
+    } catch { /* fall through */ }
+  }
+  return ''
+}
+
 export async function POST(req: NextRequest) {
   const { messages } = await req.json()
+
+  const [systemPrompt, customInstructions] = await Promise.all([
+    buildSystemPrompt(),
+    getCustomInstructions(),
+  ])
+
+  const fullSystem = customInstructions
+    ? `${systemPrompt}\n\n--- ADDITIONAL INSTRUCTIONS ---\n${customInstructions}`
+    : systemPrompt
 
   const stream = client.messages.stream({
     model:      'claude-haiku-4-5-20251001',
     max_tokens: 1024,
-    system:     await buildSystemPrompt(),
+    system:     fullSystem,
     messages,
   })
 

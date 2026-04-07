@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 
 type BlogPost    = { slug: string; title: string; date: string; excerpt: string; hidden: boolean }
 type Project     = { slug: string; title: string; date: string; description: string; tags: string[]; hidden: boolean }
-type Tab         = 'blog' | 'projects' | 'landing'
+type Tab         = 'blog' | 'projects' | 'landing' | 'chatbot'
 type SectionKey  = 'projects' | 'story' | 'social' | 'blog'
 type SocialLink  = { icon: string; label: string; sub: string; href: string; hidden: boolean }
 type StoryItem   = { title: string; body: string }
@@ -46,10 +46,12 @@ export default function AdminPage() {
   const [description,  setDescription]  = useState('')
   const [sectionOrder, setSectionOrder] = useState<SectionKey[]>(DEFAULT_SECTION_ORDER)
   const [socialLinks,  setSocialLinks]  = useState<SocialLink[]>(DEFAULT_SOCIAL_LINKS)
-  const [storyItems,   setStoryItems]   = useState<StoryItem[]>(DEFAULT_STORY_ITEMS)
-  const [chipLinks,    setChipLinks]    = useState<ChipLink[]>([])
-  const [saving,       setSaving]       = useState(false)
-  const [saved,        setSaved]        = useState(false)
+  const [storyItems,          setStoryItems]          = useState<StoryItem[]>(DEFAULT_STORY_ITEMS)
+  const [chipLinks,           setChipLinks]           = useState<ChipLink[]>([])
+  const [customInstructions,  setCustomInstructions]  = useState('')
+  const [chatSuggestions,     setChatSuggestions]     = useState<string[]>(['What projects have you built?', "What do you believe in?", "What's your background?"])
+  const [saving,              setSaving]              = useState(false)
+  const [saved,               setSaved]               = useState(false)
 
   const fetchContent = useCallback(async () => {
     const [blogRes, projRes] = await Promise.all([
@@ -76,8 +78,18 @@ export default function AdminPage() {
     }
   }, [])
 
+  const fetchChatbot = useCallback(async () => {
+    const res = await fetch('/api/content/chatbot')
+    if (res.ok) {
+      const data = await res.json()
+      setCustomInstructions(data.customInstructions ?? '')
+      if (data.suggestions?.length) setChatSuggestions(data.suggestions)
+    }
+  }, [])
+
   useEffect(() => { fetchContent() }, [fetchContent])
   useEffect(() => { fetchSettings() }, [fetchSettings])
+  useEffect(() => { fetchChatbot() }, [fetchChatbot])
 
   async function signOut() {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -119,6 +131,20 @@ export default function AdminPage() {
     }
   }
 
+  async function saveChatbot() {
+    setSaving(true)
+    const res = await fetch('/api/content/chatbot', {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ customInstructions, suggestions: chatSuggestions }),
+    })
+    setSaving(false)
+    if (res.ok) {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    }
+  }
+
   const items = tab === 'blog' ? posts : tab === 'projects' ? projects : []
 
   return (
@@ -136,7 +162,7 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 bg-space-surface border border-ocean-light/10 rounded-lg p-1 w-fit">
-        {(['blog', 'projects', 'landing'] as Tab[]).map(t => (
+        {(['blog', 'projects', 'landing', 'chatbot'] as Tab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -307,8 +333,76 @@ export default function AdminPage() {
         </div>
       )}
 
+      {/* Chatbot tab */}
+      {tab === 'chatbot' && (
+        <div className="flex flex-col gap-8">
+
+          {/* Custom Instructions */}
+          <div className="flex flex-col gap-3">
+            <div>
+              <p className="text-xs text-ink-faint uppercase tracking-widest">Custom Instructions</p>
+              <p className="text-[11px] text-ink-faint mt-0.5">Appended to the auto-built prompt. Tell the bot how to behave, what tone to use, what to avoid, etc.</p>
+            </div>
+            <textarea
+              value={customInstructions}
+              onChange={e => setCustomInstructions(e.target.value)}
+              rows={8}
+              placeholder={"e.g. Always be upbeat and enthusiastic. Mention that Seyoun is open to freelance work. Never discuss competitors."}
+              className="w-full bg-space-card border border-ocean-light/10 rounded-xl px-4 py-3 text-sm text-ink-secondary leading-relaxed placeholder:text-ink-faint/50 resize-y focus:outline-none focus:border-star-gold/40"
+            />
+          </div>
+
+          <hr className="border-ocean-dim/20" />
+
+          {/* Suggestions */}
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-ink-faint uppercase tracking-widest">Suggestion Chips</p>
+                <p className="text-[11px] text-ink-faint mt-0.5">Quick-reply buttons shown when the chat is empty.</p>
+              </div>
+              <button
+                onClick={() => setChatSuggestions(prev => [...prev, ''])}
+                className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors shrink-0"
+              >
+                + Add
+              </button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {chatSuggestions.map((s, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    value={s}
+                    onChange={e => setChatSuggestions(prev => prev.map((x, j) => j === i ? e.target.value : x))}
+                    placeholder="Suggestion text…"
+                    className="flex-1 bg-space-card border border-ocean-light/10 rounded-lg px-3 py-2 text-sm text-ink-secondary placeholder:text-ink-faint focus:outline-none focus:border-star-gold/40"
+                  />
+                  <button
+                    onClick={() => setChatSuggestions(prev => prev.filter((_, j) => j !== i))}
+                    className="text-xs px-3 py-2 border border-red-500/30 text-red-400/70 rounded-lg hover:border-red-500/50 hover:text-red-400 transition-colors shrink-0"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={saveChatbot}
+              disabled={saving}
+              className="text-xs px-4 py-1.5 bg-star-gold text-[#100c00] font-medium rounded-lg hover:bg-star-pale transition-colors disabled:opacity-50"
+            >
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+            {saved && <p className="text-xs text-star-gold">Saved</p>}
+          </div>
+        </div>
+      )}
+
       {/* Content tabs (blog / projects) */}
-      {tab !== 'landing' && (
+      {tab !== 'landing' && tab !== 'chatbot' && (
         <>
           <div className="flex justify-between items-center mb-3">
             <p className="text-xs text-ink-faint">{items.length} {tab === 'blog' ? 'posts' : 'projects'}</p>

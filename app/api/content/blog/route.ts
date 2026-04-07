@@ -14,7 +14,7 @@ export async function GET() {
     const raw = await blobFetch(url)
     const { data, content } = matter(raw)
     const slug = pathname.replace('blog/', '').replace('.md', '')
-    return { slug, title: data.title ?? '', date: data.date ?? '', excerpt: data.excerpt ?? '', content }
+    return { slug, title: data.title ?? '', date: data.date ?? '', excerpt: data.excerpt ?? '', hidden: data.hidden ?? false, content }
   }))
   return NextResponse.json(posts)
 }

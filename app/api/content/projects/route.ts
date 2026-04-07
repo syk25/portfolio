@@ -22,6 +22,7 @@ export async function GET() {
       tags:        data.tags        ?? [],
       demo:        data.demo        ?? '',
       github:      data.github      ?? '',
+      hidden:      data.hidden      ?? false,
       content,
     }
   }))

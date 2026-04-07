@@ -2,8 +2,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
-type BlogPost = { slug: string; title: string; date: string; excerpt: string }
-type Project  = { slug: string; title: string; date: string; description: string; tags: string[] }
+type BlogPost = { slug: string; title: string; date: string; excerpt: string; hidden: boolean }
+type Project  = { slug: string; title: string; date: string; description: string; tags: string[]; hidden: boolean }
 type Tab = 'blog' | 'projects' | 'landing'
 
 export default function AdminPage() {
@@ -54,6 +54,12 @@ export default function AdminPage() {
     if (!confirm(`Delete "${title}"? This cannot be undone.`)) return
     const url = type === 'blog' ? `/api/content/blog/${slug}` : `/api/content/projects/${slug}`
     const res = await fetch(url, { method: 'DELETE' })
+    if (res.ok) await fetchContent()
+  }
+
+  async function toggleHidden(type: 'blog' | 'projects', slug: string) {
+    const url = type === 'blog' ? `/api/content/blog/${slug}` : `/api/content/projects/${slug}`
+    const res = await fetch(url, { method: 'PATCH' })
     if (res.ok) await fetchContent()
   }
 
@@ -153,13 +159,28 @@ export default function AdminPage() {
             {items.map(item => (
               <div
                 key={item.slug}
-                className="flex items-center justify-between px-4 py-3 bg-space-card border border-ocean-light/10 rounded-xl"
+                className={`flex items-center justify-between px-4 py-3 bg-space-card border rounded-xl transition-opacity ${
+                  item.hidden
+                    ? 'border-ocean-light/5 opacity-50'
+                    : 'border-ocean-light/10'
+                }`}
               >
                 <div>
-                  <p className="text-sm font-medium text-ink-secondary">{item.title || item.slug}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-ink-secondary">{item.title || item.slug}</p>
+                    {item.hidden && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-ocean-light/10 text-ink-faint">hidden</span>
+                    )}
+                  </div>
                   <p className="text-xs text-ink-faint mt-0.5">{item.slug} · {item.date}</p>
                 </div>
                 <div className="flex gap-2">
+                  <button
+                    onClick={() => toggleHidden(tab as 'blog' | 'projects', item.slug)}
+                    className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors"
+                  >
+                    {item.hidden ? 'Show' : 'Hide'}
+                  </button>
                   <button
                     onClick={() => router.push(`/admin/${tab}/${item.slug}`)}
                     className="text-xs px-3 py-1.5 border border-ocean-light/20 text-ink-muted rounded-lg hover:border-ocean-light/40 hover:text-ink-secondary transition-colors"

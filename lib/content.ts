@@ -11,6 +11,7 @@ export type Project = {
   tags:        string[]
   demo:        string
   github:      string
+  hidden:      boolean
   content:     string
 }
 
@@ -19,6 +20,7 @@ export type BlogPost = {
   title:   string
   date:    string
   excerpt: string
+  hidden:  boolean
   content: string
 }
 
@@ -41,10 +43,13 @@ export async function getProjects(): Promise<Project[]> {
       tags:        data.tags        ?? [],
       demo:        data.demo        ?? '',
       github:      data.github      ?? '',
+      hidden:      data.hidden      ?? false,
       content:     await toHtml(content),
     }
   }))
-  return projects.sort((a, b) => b.date.localeCompare(a.date))
+  return projects
+    .filter(p => !p.hidden)
+    .sort((a, b) => b.date.localeCompare(a.date))
 }
 
 export async function getProject(slug: string): Promise<Project | undefined> {
@@ -74,10 +79,13 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
       title:   data.title   ?? '',
       date:    data.date    ?? '',
       excerpt: data.excerpt ?? '',
+      hidden:  data.hidden  ?? false,
       content: await toHtml(content),
     }
   }))
-  return posts.sort((a, b) => b.date.localeCompare(a.date))
+  return posts
+    .filter(p => !p.hidden)
+    .sort((a, b) => b.date.localeCompare(a.date))
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {

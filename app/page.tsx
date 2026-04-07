@@ -3,7 +3,6 @@ import { getProjects, getBlogPosts, getHeroDescription } from '@/lib/content'
 import { ProjectCard } from '@/components/ProjectCard'
 import { BlogCard } from '@/components/ProjectCard'
 import { LinkCard } from '@/components/ProjectCard'
-import Earth from '@/components/Earth'
 
 const socialLinks = [
   { icon: 'yt', label: 'YouTube',  sub: 'My channel — thoughts on tech and life', href: 'https://youtube.com' },
@@ -31,19 +30,23 @@ export default async function Home() {
         <p className="text-xs tracking-widest text-star-gold uppercase mb-4">
           ✦ Backend · AI · Solutions · Sales
         </p>
-        {/* Earth floats right so text wraps naturally around it */}
-        <div className="overflow-hidden mb-7">
-          <div className="float-right ml-5 mb-2">
-            <Earth />
-          </div>
-          <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
-            Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
-            <br />Let&apos;s build a better world.
-          </h1>
-          <p className="text-base text-ocean-muted leading-relaxed">
-            {description}
-          </p>
-        </div>
+        <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
+          Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
+          <br />Let&apos;s build a better world.
+        </h1>
+        <p
+          className="text-base leading-relaxed mb-7 font-medium"
+          style={{
+            backgroundImage:    'url(/earth.jpg)',
+            backgroundSize:     'cover',
+            backgroundPosition: 'center',
+            WebkitBackgroundClip: 'text',
+            backgroundClip:     'text',
+            color:              'transparent',
+          }}
+        >
+          {description}
+        </p>
         <Link
           href="/projects"
           className="text-sm px-5 py-2.5 rounded-lg bg-star-gold text-[#100c00] font-medium hover:bg-star-pale transition-colors"

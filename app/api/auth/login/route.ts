@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   attempts.delete(ip) // clear on success
 
   const res = NextResponse.json({ ok: true })
-  res.cookies.set(COOKIE_NAME, getExpectedToken(), {
+  res.cookies.set(COOKIE_NAME, await getExpectedToken(), {
     httpOnly: true,
     secure:   process.env.NODE_ENV === 'production',
     sameSite: 'strict',

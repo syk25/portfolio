@@ -6,8 +6,8 @@ import { verifyCookie, COOKIE_NAME } from '@/lib/session'
 
 const blogDir = path.join(process.cwd(), 'content/blog')
 
-function checkAuth(req: NextRequest) {
-  return verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
+async function checkAuth(req: NextRequest) {
+  return await verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
 }
 
 export async function GET() {
@@ -22,7 +22,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!await checkAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { slug, title, date, excerpt, content } = await req.json()
   if (!slug || !/^[a-z0-9-]+$/.test(slug))

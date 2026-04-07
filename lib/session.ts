@@ -1,22 +1,32 @@
-import crypto from 'crypto'
+export const COOKIE_NAME = 'admin_session'
 
-const COOKIE_NAME = 'admin_session'
-
-export { COOKIE_NAME }
-
-export function getExpectedToken(): string {
-  const secret   = process.env.SESSION_SECRET ?? process.env.ADMIN_PASSWORD ?? 'fallback'
-  const password = process.env.ADMIN_PASSWORD ?? ''
-  return crypto.createHmac('sha256', secret).update(password).digest('hex')
+async function hmac(secret: string, data: string): Promise<string> {
+  const enc = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false, ['sign'],
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(data))
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
 }
 
-export function verifyCookie(value: string | undefined): boolean {
+export async function getExpectedToken(): Promise<string> {
+  const secret   = process.env.SESSION_SECRET ?? process.env.ADMIN_PASSWORD ?? 'fallback'
+  const password = process.env.ADMIN_PASSWORD ?? ''
+  return hmac(secret, password)
+}
+
+export async function verifyCookie(value: string | undefined): Promise<boolean> {
   if (!value) return false
-  const expected = getExpectedToken()
+  const expected = await getExpectedToken()
   if (value.length !== expected.length) return false
-  try {
-    return crypto.timingSafeEqual(Buffer.from(value, 'hex'), Buffer.from(expected, 'hex'))
-  } catch {
-    return false
+  // Constant-time comparison without Node crypto
+  let diff = 0
+  for (let i = 0; i < expected.length; i++) {
+    diff |= value.charCodeAt(i) ^ expected.charCodeAt(i)
   }
+  return diff === 0
 }

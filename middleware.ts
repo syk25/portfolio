@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyCookie, COOKIE_NAME } from './lib/session'
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const authed = verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
+  const authed = await verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
 
   // API content routes — return 401 if not authenticated
   if (pathname.startsWith('/api/content')) {

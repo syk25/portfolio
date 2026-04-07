@@ -6,8 +6,8 @@ import { verifyCookie, COOKIE_NAME } from '@/lib/session'
 
 const blogDir = path.join(process.cwd(), 'content/blog')
 
-function checkAuth(req: NextRequest) {
-  return verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
+async function checkAuth(req: NextRequest) {
+  return await verifyCookie(req.cookies.get(COOKIE_NAME)?.value)
 }
 
 function safePath(slug: string) {
@@ -27,7 +27,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  if (!checkAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!await checkAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { slug } = await params
   const filePath = safePath(slug)
@@ -40,7 +40,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  if (!checkAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!await checkAuth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { slug } = await params
   const filePath = safePath(slug)

@@ -33,13 +33,13 @@ export default async function Home() {
           ✦ Backend · AI · Solutions · Sales
         </p>
         <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
-          Hi, I&apos;m <span className="text-star-gold">[Your Name]</span>
-          <br />I build things that matter.
+          Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
+          <br />Let&apos;s build a better world.
         </h1>
         <p className="text-base text-ocean-muted leading-relaxed mb-6 max-w-[520px]">
-          From university labs to the fields of Kenya — I believe technology
-          should serve people, not the other way around. I build with depth,
-          curiosity, and warmth.
+          I write code, ask hard questions, and care about who it&apos;s for.
+          Technology is only as good as the lives it improves — so I build
+          with that in mind, every time.
         </p>
         <div className="flex flex-wrap gap-2 mb-7">
           {roles.map(r => (

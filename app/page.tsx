@@ -47,6 +47,21 @@ export default async function Home() {
 
       <hr className="border-ocean-dim/20" />
 
+      {/* Projects */}
+      <section className="py-10">
+        <div className="flex justify-between items-center mb-5">
+          <p className="text-xs tracking-widest text-ocean-faint uppercase">Projects</p>
+          <Link href="/projects" className="text-xs text-star-gold hover:text-star-pale transition-colors">
+            view all →
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {projects.map(p => <ProjectCard key={p.slug} project={p} />)}
+        </div>
+      </section>
+
+      <hr className="border-ocean-dim/20" />
+
       {/* Story */}
       <section className="py-10">
         <p className="text-xs tracking-widest text-ocean-faint uppercase mb-5">My story</p>
@@ -63,21 +78,6 @@ export default async function Home() {
               <p className="text-[13px] text-ink-faint leading-relaxed">{s.body}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      <hr className="border-ocean-dim/20" />
-
-      {/* Projects */}
-      <section className="py-10">
-        <div className="flex justify-between items-center mb-5">
-          <p className="text-xs tracking-widest text-ocean-faint uppercase">Projects</p>
-          <Link href="/projects" className="text-xs text-star-gold hover:text-star-pale transition-colors">
-            view all →
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {projects.map(p => <ProjectCard key={p.slug} project={p} />)}
         </div>
       </section>
 

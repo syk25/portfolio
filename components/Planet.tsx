@@ -50,15 +50,6 @@ export default function Planet() {
         backgroundImage:    `url(${EARTH_URL})`,
         backgroundSize:     'cover',
         backgroundPosition: 'center center',
-        boxShadow: [
-          // Night-side shadow from bottom-right
-          'inset -90px -65px 160px rgba(0,0,0,0.88)',
-          // Lit-side micro-highlight
-          'inset 24px 18px 70px rgba(255,255,255,0.04)',
-          // Atmosphere glow
-          '0 0 100px 40px rgba(60,140,210,0.13)',
-          '0 0 220px 90px rgba(40,90,160,0.07)',
-        ].join(', '),
       }}
     >
     </div>

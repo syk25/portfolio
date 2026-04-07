@@ -5,9 +5,9 @@ import { useEffect, useRef } from 'react'
 const EARTH_URL =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/1024px-The_Earth_seen_from_Apollo_17.jpg'
 
-// Maximum pixels of planet arc visible above viewport bottom, ever.
-// Keep this well below any content so it never overlaps text.
-const MAX_VISIBLE_PX = 220
+const PLANET_SIZE   = 750   // must match the width style below
+const MAX_VISIBLE   = 100   // px of arc ever shown above viewport bottom
+const SCROLL_RATE   = 0.20  // px of rise per px scrolled
 
 export default function Planet() {
   const ref = useRef<HTMLDivElement>(null)
@@ -17,12 +17,11 @@ export default function Planet() {
     if (!el) return
 
     const update = () => {
-      const size   = el.offsetWidth
-      // Offset = how far planet is pushed down below the viewport bottom.
-      // SIZE offset → completely hidden. (SIZE - MAX_VISIBLE_PX) → arc shows.
+      // offset > 0  → planet pushed below viewport bottom (hidden)
+      // floor keeps arc ≤ MAX_VISIBLE px tall, no matter how far user scrolls
       const offset = Math.max(
-        size - MAX_VISIBLE_PX,
-        size - window.scrollY * 0.30,
+        PLANET_SIZE - MAX_VISIBLE,
+        PLANET_SIZE - window.scrollY * SCROLL_RATE,
       )
       el.style.transform = `translateX(-50%) translateY(${offset}px)`
     }

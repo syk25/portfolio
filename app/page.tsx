@@ -34,7 +34,7 @@ export default async function Home() {
           Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
           <br />Let&apos;s build a better world.
         </h1>
-        <p className="text-base text-ocean-muted leading-relaxed mb-7">
+        <p className="text-base text-ocean-muted leading-relaxed mb-7 max-w-lg">
           {description}
         </p>
         <Link

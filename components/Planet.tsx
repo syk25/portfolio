@@ -1,8 +1,8 @@
 'use client'
 import { useEffect, useRef } from 'react'
 
-// NASA "Blue Marble" (Apollo 17) — public domain, stored locally in /public
-const EARTH_URL = '/earth.jpg'
+// NASA full moon photo — public domain, stored locally in /public
+const MOON_URL = '/moon.jpg'
 
 const PLANET_SIZE   = 1100  // must match the width style below
 const MAX_VISIBLE   = 100   // px of arc ever shown above viewport bottom
@@ -47,7 +47,7 @@ export default function Planet() {
         borderRadius:       '50%',
         pointerEvents:      'none',
         zIndex:             2,
-        backgroundImage:    `url(${EARTH_URL})`,
+        backgroundImage:    `url(${MOON_URL})`,
         backgroundSize:     'cover',
         backgroundPosition: 'center center',
       }}

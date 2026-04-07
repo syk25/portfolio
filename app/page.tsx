@@ -78,9 +78,12 @@ export default async function Home() {
           {story.map(s => (
             <div
               key={s.title}
-              className="bg-space-card border border-ocean-light/10 rounded-xl p-4"
+              className="bg-space-card rounded-xl p-4 transition-all duration-300 ease-out
+                shadow-[0_2px_8px_rgba(0,0,0,0.45),inset_0_0_0_1px_rgba(255,255,255,0.03),inset_0_1px_0_rgba(255,255,255,0.04)]
+                hover:shadow-[0_0_0_1px_rgba(240,192,96,0.20),0_8px_24px_rgba(240,192,96,0.07),inset_0_1px_0_rgba(240,192,96,0.05)]
+                hover:-translate-y-0.5 group"
             >
-              <h3 className="text-sm font-medium text-ink-secondary mb-1.5">{s.title}</h3>
+              <h3 className="text-sm font-medium text-ink-secondary mb-1.5 group-hover:text-ink-primary transition-colors duration-200">{s.title}</h3>
               <p className="text-[13px] text-ink-faint leading-relaxed">{s.body}</p>
             </div>
           ))}

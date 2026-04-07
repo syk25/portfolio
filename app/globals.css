@@ -38,6 +38,43 @@ body {
   50%       { opacity: 0.9; }
 }
 
+/* Card hover shimmer sweep */
+@keyframes card-shine {
+  from { transform: translateX(-120%) skewX(-18deg); }
+  to   { transform: translateX(320%) skewX(-18deg); }
+}
+
+.card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    108deg,
+    transparent 38%,
+    rgba(240, 192, 96, 0.06) 48%,
+    rgba(240, 192, 96, 0.13) 51%,
+    rgba(240, 192, 96, 0.06) 54%,
+    transparent 64%
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.card-shimmer:hover::after {
+  animation: card-shine 0.65s ease-out forwards;
+}
+
+/* Blog post hover left-accent bar animation */
+@keyframes bar-grow {
+  from { transform: scaleY(0); opacity: 0; }
+  to   { transform: scaleY(1); opacity: 1; }
+}
+
 /* Prose styles for blog/project markdown content */
 .prose {
   color: #8aaac8;

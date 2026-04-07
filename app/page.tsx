@@ -20,7 +20,7 @@ const story = [
 export default async function Home() {
   const projects                   = (await getProjects()).slice(0, 2)
   const posts                      = (await getBlogPosts()).slice(0, 3)
-  const { subheader, description } = await getLandingSettings()
+  const { subheader, heroSubtitle, description } = await getLandingSettings()
 
   return (
     <div className="max-w-content mx-auto px-6">
@@ -32,7 +32,7 @@ export default async function Home() {
         </p>
         <h1 className="text-4xl font-medium leading-snug mb-4 text-ink-primary">
           Hi, I&apos;m <span className="text-star-gold">Seyoun Kim</span>
-          <br />Let&apos;s build a better world.
+          <br />{heroSubtitle}
         </h1>
         <p className="text-base text-ocean-muted leading-relaxed mb-7 max-w-lg">
           {description}

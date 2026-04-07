@@ -13,12 +13,13 @@ export default function AdminPage() {
   const [projects, setProjects] = useState<Project[]>([])
 
   // Landing page settings
-  const [gnb,         setGnb]         = useState('')
-  const [footer,      setFooter]      = useState('')
-  const [subheader,   setSubheader]   = useState('')
-  const [description, setDescription] = useState('')
-  const [saving,      setSaving]      = useState(false)
-  const [saved,       setSaved]       = useState(false)
+  const [gnb,          setGnb]          = useState('')
+  const [footer,       setFooter]       = useState('')
+  const [subheader,    setSubheader]    = useState('')
+  const [heroSubtitle, setHeroSubtitle] = useState('')
+  const [description,  setDescription]  = useState('')
+  const [saving,       setSaving]       = useState(false)
+  const [saved,        setSaved]        = useState(false)
 
   const fetchContent = useCallback(async () => {
     const [blogRes, projRes] = await Promise.all([
@@ -36,6 +37,7 @@ export default function AdminPage() {
       setGnb(data.gnb ?? '')
       setFooter(data.footer ?? '')
       setSubheader(data.subheader ?? '')
+      setHeroSubtitle(data.heroSubtitle ?? '')
       setDescription(data.description ?? '')
     }
   }, [])
@@ -60,7 +62,7 @@ export default function AdminPage() {
     const res = await fetch('/api/content/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ gnb, footer, subheader, description }),
+      body: JSON.stringify({ gnb, footer, subheader, heroSubtitle, description }),
     })
     setSaving(false)
     if (res.ok) {
@@ -103,10 +105,11 @@ export default function AdminPage() {
       {tab === 'landing' && (
         <div className="flex flex-col gap-5">
           {[
-            { label: 'GNB',         value: gnb,         set: setGnb,         rows: 1 },
-            { label: 'Footer',      value: footer,      set: setFooter,      rows: 1 },
-            { label: 'Subheader',   value: subheader,   set: setSubheader,   rows: 1 },
-            { label: 'Description', value: description, set: setDescription, rows: 4 },
+            { label: 'GNB',           value: gnb,          set: setGnb,          rows: 1 },
+            { label: 'Footer',        value: footer,       set: setFooter,       rows: 1 },
+            { label: 'Subheader',     value: subheader,    set: setSubheader,    rows: 1 },
+            { label: 'Hero Subtitle', value: heroSubtitle, set: setHeroSubtitle, rows: 1 },
+            { label: 'Description',   value: description,  set: setDescription,  rows: 4 },
           ].map(({ label, value, set, rows }) => (
             <div key={label}>
               <p className="text-xs text-ink-faint uppercase tracking-widest mb-2">{label}</p>

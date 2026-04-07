@@ -94,17 +94,19 @@ export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
 }
 
 export type LandingSettings = {
-  gnb:         string
-  footer:      string
-  subheader:   string
-  description: string
+  gnb:          string
+  footer:       string
+  subheader:    string
+  heroSubtitle: string
+  description:  string
 }
 
 const DEFAULTS: LandingSettings = {
-  gnb:         'your name ✦',
-  footer:      'made with intention · not just code',
-  subheader:   '✦ Backend · AI · Solutions · Sales',
-  description: "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound.",
+  gnb:          'your name ✦',
+  footer:       'made with intention · not just code',
+  subheader:    '✦ Backend · AI · Solutions · Sales',
+  heroSubtitle: "Let's build a better world.",
+  description:  "I want to make the world a little better, starting with what's around me. I build tools to improve educational experiences and solve real problems in my community. Recently, that meant building something for my local fitness center after they asked for help. It's a small step — but I believe these improvements compound.",
 }
 
 export async function getLandingSettings(): Promise<LandingSettings> {

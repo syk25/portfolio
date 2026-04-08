@@ -4,9 +4,8 @@ import { useEffect, useRef } from 'react'
 // NASA full moon photo — public domain, stored locally in /public
 const MOON_URL = '/moon.jpg'
 
-const PLANET_SIZE   = 1100  // must match the width style below
-const MAX_VISIBLE   = 200   // px of arc ever shown above viewport bottom
-const SCROLL_RATE   = 0.20  // px of rise per px scrolled
+const PLANET_SIZE = 1100  // must match the width style below
+const MAX_VISIBLE = 200   // px of arc shown at full scroll
 
 export default function Planet() {
   const ref = useRef<HTMLDivElement>(null)
@@ -16,12 +15,11 @@ export default function Planet() {
     if (!el) return
 
     const update = () => {
-      // offset > 0  → planet pushed below viewport bottom (hidden)
-      // floor keeps arc ≤ MAX_VISIBLE px tall, no matter how far user scrolls
-      const offset = Math.max(
-        PLANET_SIZE - MAX_VISIBLE,
-        PLANET_SIZE - window.scrollY * SCROLL_RATE,
-      )
+      // Use scroll percentage so the effect works regardless of page height.
+      // 0% scroll → fully hidden; 100% scroll → MAX_VISIBLE px arc visible.
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
+      const pct = Math.min(1, window.scrollY / maxScroll)
+      const offset = PLANET_SIZE - pct * MAX_VISIBLE
       el.style.transform = `translateX(-50%) translateY(${offset}px)`
     }
 

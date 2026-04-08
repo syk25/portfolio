@@ -4,7 +4,7 @@ date: 2026.04.06
 excerpt: >-
   A reflection on why real-world context changes how you think about software —
   and why the best technology disappears.
-hidden: true
+hidden: false
 ---
 
 I spent time in Kenya working on a project that was supposed to help local farmers track market prices in real time.

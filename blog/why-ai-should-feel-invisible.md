@@ -1,7 +1,10 @@
 ---
-title: "Why I think AI should feel invisible"
-date: "2026.03.20"
-excerpt: "The best technology disappears into the background. Here's what that means when you're building with AI — and why most AI products get it wrong."
+title: Why I think AI should feel invisible
+date: 2026.03.20
+excerpt: >-
+  The best technology disappears into the background. Here's what that means
+  when you're building with AI — and why most AI products get it wrong.
+hidden: true
 ---
 
 There's a pattern I keep seeing in AI products right now.

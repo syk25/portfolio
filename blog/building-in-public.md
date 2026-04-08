@@ -4,6 +4,7 @@ date: 2026.03.05
 excerpt: >-
   Logging my process openly has changed the way I work. Here's what surprised me
   most.2
+hidden: true
 ---
 
 I started logging my projects publicly about two months ago.

@@ -1,10 +1,17 @@
 ---
-title: "ERP Desktop Program"
-description: "A Windows desktop ERP system built to manage inventory, orders, and reporting for a mid-size manufacturing client."
-date: "2026.03 → ongoing"
-tags: ["Java", "Spring Boot", "WPF", "PostgreSQL"]
-demo: "https://your-demo-link.com"
-github: "https://github.com/your-repo"
+title: ERP Desktop Program
+description: >-
+  A Windows desktop ERP system built to manage inventory, orders, and reporting
+  for a mid-size manufacturing client.
+date: 2026.03 → ongoing
+tags:
+  - Java
+  - Spring Boot
+  - WPF
+  - PostgreSQL
+demo: 'https://your-demo-link.com'
+github: 'https://github.com/your-repo'
+hidden: true
 ---
 
 ## The Problem

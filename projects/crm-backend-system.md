@@ -1,10 +1,17 @@
 ---
-title: "CRM Backend System"
-description: "A production-grade CRM backend system built for a client managing B2B sales pipelines with over 2,000 contacts."
-date: "2026.03 → 2026.04"
-tags: ["Spring Boot", "PostgreSQL", "Supabase", "REST API"]
-demo: ""
-github: ""
+title: CRM Backend System
+description: >-
+  A production-grade CRM backend system built for a client managing B2B sales
+  pipelines with over 2,000 contacts.
+date: 2026.03 → 2026.04
+tags:
+  - Spring Boot
+  - PostgreSQL
+  - Supabase
+  - REST API
+demo: ''
+github: ''
+hidden: true
 ---
 
 ## The Problem

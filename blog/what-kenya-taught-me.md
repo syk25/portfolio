@@ -1,12 +1,11 @@
 ---
-title: What Kenya taught me about building for people
+title: '[Test] What Kenya taught me about building for people'
 date: 2026.04.06
 excerpt: >-
-  A reflection on why real-world context changes how you think about software —
-  and why the best technology disappears.
-hidden: false
+  [Test] A reflection on why real-world context changes how you think about
+  software — and why the best technology disappears.
 ---
-
+[Test] 
 I spent time in Kenya working on a project that was supposed to help local farmers track market prices in real time.
 
 We built it. It worked perfectly on our laptops.
